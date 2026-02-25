@@ -214,6 +214,36 @@ class Exp_Main(Exp_Basic):
         best_model_path = path + '/' + 'checkpoint.pth'
         self.model.load_state_dict(torch.load(best_model_path))
 
+        # ===== 导出 ONNX =====
+        self.model.eval()
+        onnx_path = os.path.join(path, 'model.onnx')
+        dummy_input = torch.randn(1, self.args.seq_len, self.args.enc_in).float().to(self.device)
+        if 'Linear' in self.args.model or 'TST' in self.args.model:
+            torch.onnx.export(
+                self.model,
+                dummy_input,
+                onnx_path,
+                input_names=['input'],
+                output_names=['output'],
+                dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}},
+                opset_version=11
+            )
+        else:
+            dummy_x_mark = torch.randn(1, self.args.seq_len, 4).float().to(self.device)
+            dummy_dec = torch.randn(1, self.args.label_len + self.args.pred_len, self.args.enc_in).float().to(self.device)
+            dummy_y_mark = torch.randn(1, self.args.label_len + self.args.pred_len, 4).float().to(self.device)
+            torch.onnx.export(
+                self.model,
+                (dummy_input, dummy_x_mark, dummy_dec, dummy_y_mark),
+                onnx_path,
+                input_names=['batch_x', 'batch_x_mark', 'dec_inp', 'batch_y_mark'],
+                output_names=['output'],
+                dynamic_axes={'batch_x': {0: 'batch_size'}, 'output': {0: 'batch_size'}},
+                opset_version=11
+            )
+        print('>>>>>>>ONNX 模型已保存至: {}<<<<<<'.format(onnx_path))
+        # ====================
+
         return self.model
 
     def test(self, setting, test=0):

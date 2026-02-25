@@ -1,46 +1,127 @@
-import { useState } from 'react'
-import axios from 'axios'
+import { useState } from 'react' // React 的 useState Hook, 用于在函数组件中管理状态
+import axios from 'axios' // HTTP 请求库，比原生 fetch 更简洁, 用于和后端通信
 
+// 训练状态的类型定义
+interface TrainingStatus {
+  status: 'idle' | 'running' | 'completed' | 'failed'
+  message: string
+  start_time: string | null
+  conda_env: string
+}
+
+// 状态变量
 function App() {
-  // 就像 Python 里的变量，这里用来存后端返回的消息
-  // <string> 就是我们之前说的 TS 泛型，明确这个状态存的是字符串
-  const [message, setMessage] = useState<string>('等待后端响应...')
-  // message 是当前的状态值，setMessage 是用来更新这个状态的函数
+  const [message, setMessage] = useState<string>('等待后端相应...')
+  // 定义一个状态变量 message, 存储后端返回的文字消息, 初始值为 '等待后端响应...'
+  const [trainingStatus, setTrainingStatus] = useState<TrainingStatus | null>(null)
+  // 存储训练状态对象
+  // { status: "running", message: "训练中...", start_time: "..." }
+  // 初始值：null（还没查询过）
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  // 存储按钮是否在请求中的标志, 防止用户疯狂点击提交按钮重复提交
 
-  // 这是一个异步函数，用来向后端发请求
+  // 原有的测试函数
   const fetchData = async () => {
     try {
       setMessage('正在请求...')
-      // 注意：这里的 8000 是你 FastAPI 的端口
       const response = await axios.get('http://localhost:8000/')
-      //等待后端响应, 期间页面不卡死
-      //respone的结构{ data: { status: "success", message: "..." }, status: 200, ... }
-      
-      // 拿到后端返回的 JSON 数据里的 message 字段
       setMessage(response.data.message)
     } catch (error) {
-      // 如果上述请求失败了（比如后端没启动，或者跨域问题），就会执行这里的代码
       setMessage('请求失败，请检查后端是否启动或跨域配置！')
       console.error(error)
     }
   }
 
-  return ( // UI返回react, react再渲染到页面上
+  // 启动训练函数
+  const startTraining = async () => {
+    try {
+      setIsLoading(true) // 开始请求，设置加载状态为 true
+
+      const response = await axios.post('http://localhost:8000/api/train/start')
+      // 向后端发 POST 请求
+      // await：等待后端响应，期间页面不卡死
+      // response.data 就是后端 return 的那个字典：
+      // { "success": true, "message": "训练已启动..." }
+
+      if (response.data.success) {
+        setMessage(response.data.message) // 更新 message 状态，显示后端返回的消息
+        startPollingStatus() // 启动轮询查询训练状态
+      } else {
+        setMessage(response.data.message) // 显示错误消息
+      }
+    } catch (error) {
+      setMessage('Failed to start training:' + error) // 请求失败，显示错误消息
+      console.error('Error starting training:', error)
+    } finally {
+      setIsLoading(false) // 无论成功失败，请求结束后都恢复按钮状态
+    }
+  }
+
+  // 轮询状态函数
+  const startPollingStatus = () => {
+    const interval = setInterval(async () => {
+      // setInterval 是浏览器内置函数
+      // 作用：每隔指定毫秒数，重复执行一次里面的函数
+      // 返回值 interval 是这个定时器的"ID"，用于后面停止它
+
+      const response = await axios.get('http://localhost:8000/api/train/status')
+      // 每次执行都向后端查询训练状态
+
+      setTrainingStatus(response.data) // 用最新状态更新变量, react自动重新渲染页面
+
+      if (response.data.status === 'completed' || response.data.status === 'failed') {
+        clearInterval(interval) // 停止轮询
+      }
+    }, 2000) // 每隔 2 秒查询一次状态
+  }
+
+  // UI
+  return (
     <div style={{ padding: '50px', fontFamily: 'sans-serif' }}>
-      <h2>我的时序预测平台 - 前后端通信测试</h2>
-      
-      {/* 画一个按钮，点击就触发 fetchData 函数 */}
+      <h2>时序预测平台</h2>
+      {/* 新增：训练按钮 */}
+      <h3>模型训练</h3>
       <button 
-        onClick={fetchData} 
-        style={{ padding: '10px 20px', fontSize: '16px', cursor: 'pointer' }}
+        onClick={startTraining}
+        // 点击按钮时调用 startTraining 函数, startTraining()是函数调用, startTraining 是函数引用
+        disabled={isLoading || trainingStatus?.status === 'running'}
+        // 禁用条件：如果正在请求中（isLoading）或者训练状态是 'running'，则禁用按钮(变灰)，防止重复提交
+        style={{ 
+          padding: '12px 24px', // 内边距
+          fontSize: '16px', 
+          cursor: trainingStatus?.status === 'running' ? 'not-allowed' : 'pointer',
+          // 指针形状是否在训练中, 是则显示禁止符号, 否则显示手型
+          backgroundColor: trainingStatus?.status === 'running' ? '#d61b1b' : '#4CAF50',
+          color: 'white', // 字体颜色
+          border: 'none', // 无边框
+          borderRadius: '10px' // 圆角
+        }}
+      // 按钮文本根据训练状态动态显示, 如果正在训练则显示 '训练中...', 否则显示 '开始训练'
       >
-        向 FastAPI 发送 GET 请求
+        {trainingStatus?.status === 'running' ? '训练中...' : '开始训练'} 
       </button>
 
-      {/* 展示后端返回的信息 */}
-      <div style={{ marginTop: '20px', padding: '15px', background: '#e71c1c', borderRadius: '5px' }}>
-        <strong>后端返回结果：</strong> {message}
-      </div>
+      {/* 训练状态显示 */}
+      {trainingStatus && (
+        <div style={{ 
+          marginTop: '20px', 
+          padding: '10px 20px', 
+          background: trainingStatus.status === 'completed' ? '#d4edda' : 
+                     trainingStatus.status === 'failed' ? '#f8d7da' : '#fff3cd',
+          borderRadius: '10px',
+          color: '#333',
+          border: `5px solid ${
+            trainingStatus.status === 'completed' ? '#a8d5b5' :
+            trainingStatus.status === 'failed'    ? '#f0a8ae' : '#ffe08a'
+          }`
+        }}>
+          <strong>训练状态：</strong> {trainingStatus.status} <br />
+          <strong>消息：</strong> {trainingStatus.message} <br />
+          {trainingStatus.start_time && (
+            <><strong>开始时间：</strong> {trainingStatus.start_time}</>
+          )}
+        </div>
+      )}
     </div>
   )
 }

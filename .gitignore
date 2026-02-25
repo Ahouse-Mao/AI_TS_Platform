@@ -1,2 +1,8 @@
 *.pyc
 *.log
+*.npy
+*.pdf
+*.onnx
+*.pth
+__pycache__/
+*.txt
