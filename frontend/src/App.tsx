@@ -1,10 +1,14 @@
-import { useState } from 'react'
+// ===================== 应用骨架 =====================
+// 路由配置、导航栏、页面布局以及跨页共享等全局性功能
+
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom'
-import type { TrainingStatus } from './types'
-import { TrainPage }      from './pages/TrainPage'
-import { PredictPage }    from './pages/PredictPage'
-import { AssistantPage }  from './pages/AssistantPage'
+import type { TrainingStatus, CheckpointInfo } from './types'
+import { TrainPage }       from './pages/TrainPage'
+import { PredictPage }     from './pages/PredictPage'
+import { AssistantPage }   from './pages/AssistantPage'
+import { InferencePage }   from './pages/InferencePage'
 // BrowserRouter : 路由容器，监听浏览器地址栏变化
 // Routes        : 路由规则集合，匹配当前路径并渲染对应组件
 // Route         : 单条路由规则，path → element
@@ -29,6 +33,28 @@ function App() {
   // 所以放在 App 里的 state 不会因为切换 Tab 而丢失
   const [trainingStatus, setTrainingStatus] = useState<TrainingStatus | null>(null)
   const [isTrainLoading, setIsTrainLoading] = useState<boolean>(false)
+
+  // ── Checkpoint 列表提升到 App（仅首次加载，切换路由不重复请求） ──
+  const [checkpoints,        setCheckpoints]        = useState<CheckpointInfo[]>([])
+  const [checkpointsLoading, setCheckpointsLoading] = useState<boolean>(true)
+  const [checkpointsError,   setCheckpointsError]   = useState<string | null>(null)
+
+  useEffect(() => {
+    axios.get('http://localhost:8000/api/predict/checkpoints')
+      .then(res  => setCheckpoints(res.data))
+      .catch(err => setCheckpointsError('获取 Checkpoint 列表失败：' + err.message))
+      .finally(() => setCheckpointsLoading(false))
+  }, [])  // 空依赖 → 只在 App 首次挂载时执行一次
+
+  // 主动刷新 Checkpoint 列表
+  const refreshCheckpoints = () => {
+    setCheckpointsLoading(true)
+    setCheckpointsError(null)
+    axios.get('http://localhost:8000/api/predict/checkpoints')
+      .then(res  => setCheckpoints(res.data))
+      .catch(err => setCheckpointsError('获取 Checkpoint 列表失败：' + err.message))
+      .finally(() => setCheckpointsLoading(false))
+  }
 
   // 轮询状态函数：每2秒向后端查询一次训练状态
   const startPollingStatus = () => {
@@ -107,7 +133,8 @@ function App() {
             {/* replace: 重定向不留历史记录，避免按返回键又跳回 / */}
             <Route path="/" element={<Navigate to="/train" replace />} />
             <Route path="/train"     element={<TrainPage trainingStatus={trainingStatus} isLoading={isTrainLoading} onStartTraining={startTraining} />} />
-            <Route path="/predict"   element={<PredictPage />} />
+            <Route path="/predict"               element={<PredictPage checkpoints={checkpoints} loading={checkpointsLoading} error={checkpointsError} onRefresh={refreshCheckpoints} />} />
+            <Route path="/predict/:folderName"    element={<InferencePage />} />
             <Route path="/assistant" element={<AssistantPage />} />
           </Routes>
         </div>

@@ -1,3 +1,5 @@
+// ===================== 复用组件格式 =====================
+
 // 单行参数展示小组件
 // label: 左侧灰色标签，value: 右侧白色值
 export function InfoItem({ label, value }: { label: string; value: string }) {

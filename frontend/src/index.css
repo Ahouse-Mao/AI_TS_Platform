@@ -24,8 +24,6 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -65,4 +63,43 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+
+/* ===== 页面滑入动画 ===== */
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* bezier曲线 */
+.page-slide-in {
+  animation: slideInFromRight 0.45s cubic-bezier(0.4, 1, 0.4, 1) both;
+}
+
+.page-slide-out {
+  animation: slideOutToRight 0.45s cubic-bezier(0.4, 0, 0.4, 1) both;
+  pointer-events: none; /* 退出过程中禁止再点击 */
+}
+
+@keyframes slideOutToRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(60px);
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
