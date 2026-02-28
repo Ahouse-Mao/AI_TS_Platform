@@ -17,7 +17,7 @@ parser.add_argument('--random_seed', type=int, default=2021, help='random seed')
 parser.add_argument('--is_training', type=int, default=1, help='status')
 parser.add_argument('--model_id', type=str, default='ETTh1_336_96', help='model id')
 parser.add_argument('--model', type=str, default='DLinear',
-                    help='model name, options: [Autoformer, Informer, Transformer]')
+                    help='model name, options: [Autoformer, Informer, Transformer, DLinear, PatchTST]')
 
 # data loader
 parser.add_argument('--data', type=str, default='ETTh1', help='dataset type')

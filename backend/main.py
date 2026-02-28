@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 import os
 import subprocess
+import re
+from typing import Optional
 
 # 创建 FastAPI 实例
 app = FastAPI()
@@ -90,9 +92,105 @@ def get_training_status(): # 查询请求很快, 不用异步
     return trainning_status # 直接返回全局字典
 
 
-# # 健康检查接口，用于验证后端是否正常启动
-# # 注意：CORS 是否生效需要从前端（5173端口）发起 fetch 请求才能真正验证
-# @app.get("/")
-# def read_root():
-#     return {"status": "success", "message": "FastAPI 后端已启动！"}
+# ===== 工具函数: 解析 Checkpoint 文件夹名 =====
+
+# 已知模型名列表，用于从文件夹名中定位模型字段的位置
+KNOWN_MODELS = ['Autoformer', 'Informer', 'Transformer', 'DLinear',
+                'PatchTST', 'Linear', 'NLinear', 'FEDformer', 'Pyraformer']
+
+# 特征模式的中文说明
+FEATURES_DESC = {
+    'M':  '多变量 → 多变量',
+    'S':  '单变量 → 单变量',
+    'MS': '多变量 → 单变量',
+}
+
+def parse_checkpoint_name(name: str) -> dict:
+    """
+    将 Checkpoint 文件夹名解析为结构化信息。
+    命名格式：
+      {model_id}_{model}_{data}_ft{features}_sl{seq_len}_ll{label_len}_pl{pred_len}
+      _dm{d_model}_nh{n_heads}_el{e_layers}_dl{d_layers}_df{d_ff}_fc{factor}
+      _eb{embed}_dt{distil}_{des}_{exp_id}
+    """
+    # 用正则提取 _ft... 之后的所有键值对
+    kv_pattern = (
+        r'_ft(.+?)_sl(\d+)_ll(\d+)_pl(\d+)'
+        r'_dm(\d+)_nh(\d+)_el(\d+)_dl(\d+)_df(\d+)'
+        r'_fc(\d+)_eb(.+?)_dt(.+?)_(.+?)_(\d+)$'
+    )
+    match = re.search(kv_pattern, name)
+    if not match:
+        return {"folder_name": name, "parse_error": True}
+
+    # match.start() 之前的部分是 "{model_id}_{model}_{data}"
+    prefix = name[:match.start()]
+
+    # 在 prefix 里查找已知模型名，从而切分出 model_id 和 data
+    model, model_id, dataset = None, prefix, ''
+    for m in KNOWN_MODELS:
+        if f'_{m}_' in prefix:
+            parts = prefix.split(f'_{m}_', 1)  # 只切第一刀
+            model_id = parts[0]
+            dataset  = parts[1]
+            model    = m
+            break
+
+    features_raw = match.group(1)
+    return {
+        "folder_name": name,
+        # ── 核心信息 ──
+        "model_id":  model_id,
+        "model":     model or "Unknown",
+        "dataset":   dataset,
+        # ── 序列长度 ──
+        "features":      features_raw,
+        "features_desc": FEATURES_DESC.get(features_raw, features_raw),
+        "seq_len":   int(match.group(2)),   # 输入步长
+        "label_len": int(match.group(3)),   # 标签步长
+        "pred_len":  int(match.group(4)),   # 预测步长
+        # ── 模型超参 ──
+        "d_model":   int(match.group(5)),
+        "n_heads":   int(match.group(6)),
+        "e_layers":  int(match.group(7)),
+        "d_layers":  int(match.group(8)),
+        "d_ff":      int(match.group(9)),
+        "factor":    int(match.group(10)),
+        "embed":     match.group(11),
+        "distil":    match.group(12),
+        # ── 实验标识 ──
+        "des":       match.group(13),
+        "exp_id":    int(match.group(14)),
+    }
+# =====================
+
+# ===== API端点: 获取 Checkpoint 列表 =====
+
+CHECKPOINTS_DIR = os.path.join(os.path.dirname(__file__), 'model_src', 'checkpoints')
+
+@app.get("/api/predict/checkpoints")
+def list_checkpoints():
+    """
+    扫描 checkpoints/ 目录，返回每个子文件夹的解析信息，
+    并附带该文件夹下可用的模型文件（.pth / .onnx）。
+    """
+    if not os.path.isdir(CHECKPOINTS_DIR):
+        return []
+
+    results = []
+    for folder in sorted(os.listdir(CHECKPOINTS_DIR)):
+        folder_path = os.path.join(CHECKPOINTS_DIR, folder)
+        if not os.path.isdir(folder_path):
+            continue
+
+        info = parse_checkpoint_name(folder)
+
+        # 检查可用文件
+        info["has_pth"]  = os.path.isfile(os.path.join(folder_path, 'checkpoint.pth'))
+        info["has_onnx"] = os.path.isfile(os.path.join(folder_path, 'model.onnx'))
+
+        results.append(info)
+
+    return results
+# =====================
 
