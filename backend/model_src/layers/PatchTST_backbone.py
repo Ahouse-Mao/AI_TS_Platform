@@ -67,7 +67,14 @@ class PatchTST_backbone(nn.Module):
         # do patching
         if self.padding_patch == 'end':
             z = self.padding_patch_layer(z)
-        z = z.unfold(dimension=-1, size=self.patch_len, step=self.stride)                   # z: [bs x nvars x patch_num x patch_len]
+        # 使用 F.unfold 替代 Tensor.unfold，以兼容 ONNX 导出（Im2Col 算子）
+        # z: [bs x nvars x seq_len] -> [bs*nvars x 1 x 1 x seq_len]
+        bs, nvars, seq_len = z.shape
+        z_4d = z.reshape(bs * nvars, 1, 1, seq_len)
+        z_patches = F.unfold(z_4d, kernel_size=(1, self.patch_len), stride=(1, self.stride))
+        # z_patches: [bs*nvars x patch_len x patch_num]
+        patch_num = z_patches.shape[-1]
+        z = z_patches.permute(0, 2, 1).reshape(bs, nvars, patch_num, self.patch_len)       # z: [bs x nvars x patch_num x patch_len]
         z = z.permute(0,1,3,2)                                                              # z: [bs x nvars x patch_len x patch_num]
         
         # model

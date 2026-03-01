@@ -1,10 +1,10 @@
 // ===================== 应用骨架 =====================
 // 路由配置、导航栏、页面布局以及跨页共享等全局性功能
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom'
-import type { TrainingStatus, CheckpointInfo } from './types'
+import type { TrainingStatus, CheckpointInfo, TrainConfig } from './types'
 import { TrainPage }       from './pages/TrainPage'
 import { PredictPage }     from './pages/PredictPage'
 import { AssistantPage }   from './pages/AssistantPage'
@@ -34,6 +34,10 @@ function App() {
   const [trainingStatus, setTrainingStatus] = useState<TrainingStatus | null>(null)
   const [isTrainLoading, setIsTrainLoading] = useState<boolean>(false)
 
+  // ── 训练日志提升到 App，路由切换不丢失 ──
+  const [trainLogs,  setTrainLogs]  = useState<string[]>([])
+  const logPollRef                  = useRef<ReturnType<typeof setInterval> | null>(null)
+
   // ── Checkpoint 列表提升到 App（仅首次加载，切换路由不重复请求） ──
   const [checkpoints,        setCheckpoints]        = useState<CheckpointInfo[]>([])
   const [checkpointsLoading, setCheckpointsLoading] = useState<boolean>(true)
@@ -56,24 +60,39 @@ function App() {
       .finally(() => setCheckpointsLoading(false))
   }
 
-  // 轮询状态函数：每2秒向后端查询一次训练状态
+  // 轮询状态 + 日志，两者合并为一个 interval
   const startPollingStatus = () => {
-    const interval = setInterval(async () => {
-      const response = await axios.get('http://localhost:8000/api/train/status')
-      setTrainingStatus(response.data)
-      if (response.data.status === 'completed' || response.data.status === 'failed') {
-        clearInterval(interval) // 训练结束，停止轮询
-      }
-    }, 2000)
+    if (logPollRef.current) clearInterval(logPollRef.current)
+    let logOffset = 0
+    logPollRef.current = setInterval(async () => {
+      try {
+        // 并发拉取状态和增量日志
+        const [statusRes, logRes] = await Promise.all([
+          axios.get('http://localhost:8000/api/train/status'),
+          axios.get(`http://localhost:8000/api/train/logs?since=${logOffset}`),
+        ])
+        setTrainingStatus(statusRes.data)
+        const { lines, total } = logRes.data as { lines: string[]; total: number }
+        if (lines.length > 0) {
+          setTrainLogs(prev => [...prev, ...lines])
+          logOffset = total
+        }
+        if (statusRes.data.status === 'completed' || statusRes.data.status === 'failed') {
+          clearInterval(logPollRef.current!)
+          logPollRef.current = null
+        }
+      } catch { /* 网络抖动静默跳过 */ }
+    }, 1500)
   }
 
-  // 启动训练函数
-  const startTraining = async () => {
+  // 启动训练函数（接受训练配置参数，传递给后端）
+  const startTraining = async (config: TrainConfig) => {
     try {
       setIsTrainLoading(true)
-      const response = await axios.post('http://localhost:8000/api/train/start')
+      setTrainLogs([])   // 清空上次日志
+      const response = await axios.post('http://localhost:8000/api/train/start', config)
       if (response.data.success) {
-        startPollingStatus()
+        setTimeout(startPollingStatus, 800)  // 延迟 800ms 等后端写入第一条日志
       }
     } catch (error) {
       console.error('Error starting training:', error)
@@ -132,7 +151,7 @@ function App() {
             {/* 访问根路径 / 时自动重定向到 /train */}
             {/* replace: 重定向不留历史记录，避免按返回键又跳回 / */}
             <Route path="/" element={<Navigate to="/train" replace />} />
-            <Route path="/train"     element={<TrainPage trainingStatus={trainingStatus} isLoading={isTrainLoading} onStartTraining={startTraining} />} />
+            <Route path="/train"     element={<TrainPage trainingStatus={trainingStatus} isLoading={isTrainLoading} onStartTraining={startTraining} trainLogs={trainLogs} onClearLogs={() => setTrainLogs([])} />} />
             <Route path="/predict"               element={<PredictPage checkpoints={checkpoints} loading={checkpointsLoading} error={checkpointsError} onRefresh={refreshCheckpoints} />} />
             <Route path="/predict/:folderName"    element={<InferencePage />} />
             <Route path="/assistant" element={<AssistantPage />} />

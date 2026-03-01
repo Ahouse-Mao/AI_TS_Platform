@@ -217,31 +217,40 @@ class Exp_Main(Exp_Basic):
         # ===== 导出 ONNX =====
         self.model.eval()
         onnx_path = os.path.join(path, 'model.onnx')
+        pt_path   = os.path.join(path, 'model.pt')
         dummy_input = torch.randn(1, self.args.seq_len, self.args.enc_in).float().to(self.device)
-        if 'Linear' in self.args.model or 'TST' in self.args.model:
-            torch.onnx.export(
-                self.model,
-                dummy_input,
-                onnx_path,
-                input_names=['input'],
-                output_names=['output'],
-                dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}},
-                opset_version=11
-            )
-        else:
-            dummy_x_mark = torch.randn(1, self.args.seq_len, 4).float().to(self.device)
-            dummy_dec = torch.randn(1, self.args.label_len + self.args.pred_len, self.args.enc_in).float().to(self.device)
-            dummy_y_mark = torch.randn(1, self.args.label_len + self.args.pred_len, 4).float().to(self.device)
-            torch.onnx.export(
-                self.model,
-                (dummy_input, dummy_x_mark, dummy_dec, dummy_y_mark),
-                onnx_path,
-                input_names=['batch_x', 'batch_x_mark', 'dec_inp', 'batch_y_mark'],
-                output_names=['output'],
-                dynamic_axes={'batch_x': {0: 'batch_size'}, 'output': {0: 'batch_size'}},
-                opset_version=11
-            )
-        print('>>>>>>>ONNX 模型已保存至: {}<<<<<<'.format(onnx_path))
+        try:
+            if 'Linear' in self.args.model or 'TST' in self.args.model:
+                torch.onnx.export(
+                    self.model,
+                    dummy_input,
+                    onnx_path,
+                    input_names=['input'],
+                    output_names=['output'],
+                    dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}},
+                    opset_version=16
+                )
+            else:
+                dummy_x_mark = torch.randn(1, self.args.seq_len, 4).float().to(self.device)
+                dummy_dec = torch.randn(1, self.args.label_len + self.args.pred_len, self.args.enc_in).float().to(self.device)
+                dummy_y_mark = torch.randn(1, self.args.label_len + self.args.pred_len, 4).float().to(self.device)
+                torch.onnx.export(
+                    self.model,
+                    (dummy_input, dummy_x_mark, dummy_dec, dummy_y_mark),
+                    onnx_path,
+                    input_names=['batch_x', 'batch_x_mark', 'dec_inp', 'batch_y_mark'],
+                    output_names=['output'],
+                    dynamic_axes={'batch_x': {0: 'batch_size'}, 'output': {0: 'batch_size'}},
+                    opset_version=16
+                )
+            print('>>>>>>>ONNX 模型已保存至: {}<<<<<<'.format(onnx_path))
+        except Exception as e:
+            # ONNX 不支持特定算子时，回退到 TorchScript 格式
+            print(f'[WARN] ONNX 导出失败（{e}），回退到 TorchScript 格式')
+            with torch.no_grad():
+                traced = torch.jit.trace(self.model, dummy_input)
+            traced.save(pt_path)
+            print('>>>>>>>TorchScript 模型已保存至: {}<<<<<<'.format(pt_path))
         # ====================
 
         return self.model

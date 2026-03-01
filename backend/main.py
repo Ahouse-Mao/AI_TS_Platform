@@ -30,6 +30,51 @@ app.add_middleware(
 )
 # =====================
 
+# ===== 训练请求体 =====
+class TrainRequest(BaseModel):
+    # 基本参数
+    model:          str   = 'DLinear'
+    model_id:       str   = 'ETTh1_336_96'
+    data:           str   = 'ETTh1'
+    data_path:      str   = 'ETTh1.csv'
+    features:       str   = 'M'
+    seq_len:        int   = 96
+    label_len:      int   = 48
+    pred_len:       int   = 96
+    train_epochs:   int   = 50
+    patience:       int   = 10
+    batch_size:     int   = 64
+    learning_rate:  float = 0.005
+    use_gpu:        bool  = True
+    # Transformer 系列参数
+    enc_in:         Optional[int]   = None
+    dec_in:         Optional[int]   = None
+    c_out:          Optional[int]   = None
+    d_model:        Optional[int]   = None
+    n_heads:        Optional[int]   = None
+    e_layers:       Optional[int]   = None
+    d_layers:       Optional[int]   = None
+    d_ff:           Optional[int]   = None
+    factor:         Optional[int]   = None
+    dropout:        Optional[float] = None
+    embed:          Optional[str]   = None
+    activation:     Optional[str]   = None
+    moving_avg:     Optional[int]   = None
+    # PatchTST 专有参数
+    fc_dropout:     Optional[float] = None
+    head_dropout:   Optional[float] = None
+    patch_len:      Optional[int]   = None
+    stride:         Optional[int]   = None
+    padding_patch:  Optional[str]   = None
+    revin:          Optional[int]   = None
+    affine:         Optional[int]   = None
+    subtract_last:  Optional[int]   = None
+    decomposition:  Optional[int]   = None
+    kernel_size:    Optional[int]   = None
+    individual:     Optional[int]   = None
+# ======================
+
+
 # ===== 存储训练状态 =====
 trainning_status = {
     "status": "idle",  # idle, running, completed, failed
@@ -39,51 +84,84 @@ trainning_status = {
 }
 # =====================
 
+# ===== 训练日志缓冲区 =====
+# 每次启动新训练时清空，前端通过 /api/train/logs?since=N 增量拉取
+train_logs: list[str] = []
+# =====================
+
 # ===== 后台任务函数 =====
-def run_training_task():
-    global trainning_status # 声明修改全局变量
+def run_training_task(config: dict):
+    global trainning_status, train_logs
     try:
         trainning_status["status"] = "running"
         trainning_status["start_time"] = datetime.now().isoformat()
         trainning_status["message"] = "Training in progress..."
+        train_logs.clear()  # 每次新训练前清空日志
+        train_logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] Training started...")
 
         script_path = os.path.join(os.path.dirname(__file__), 'model_src', 'run_longExp.py')
         env_name = trainning_status["environment"]
 
-        # result.stdout 和 result.stderr 分别捕获标准输出和错误输出
-        # result.returncode 捕获命令的返回码, 0 表示成功，非 0 表示失败
-        result = subprocess.run(
-            f'conda activate {env_name} && python "{script_path}"',
-            shell=True, # 使用shell解释命令
-            capture_output=True, # 捕获命令的输出内容
-            text=True, # 将输出内容作为字符串处理
-            cwd=os.path.join(os.path.dirname(__file__), "model_src") # 设置工作目录为 model_src
+        # 将配置字典转为 CLI 参数，bool 值转为 True/False 字符串
+        args_parts = []
+        for key, value in config.items():
+            if isinstance(value, bool):
+                args_parts.append(f'--{key} {str(value)}')
+            else:
+                args_parts.append(f'--{key} {value}')
+        args_str = ' '.join(args_parts)
+
+        # 使用 Popen 逐行实时读取输出，写入日志缓冲区
+        # encoding + errors 防止 Windows 上 GBK/UTF-8 混合编码导致读取崩溃
+        proc = subprocess.Popen(
+            f'conda activate {env_name} && python -u "{script_path}" {args_str}',
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,  # 将 stderr 合并到 stdout
+            encoding='utf-8',
+            errors='replace',          # 无法解码的字符替换为 ?，防止异常
+            bufsize=1,                 # 行缓冲（需配合 -u 使用）
+            cwd=os.path.join(os.path.dirname(__file__), "model_src"),
+            env={**os.environ, 'PYTHONIOENCODING': 'utf-8', 'PYTHONUNBUFFERED': '1'}
         )
 
-        if result.returncode == 0:
+        # 逐行读取并追加到日志缓冲区
+        for line in proc.stdout:  # type: ignore[union-attr]
+            line = line.rstrip('\n')
+            if line:
+                train_logs.append(line)
+
+        proc.wait()  # 等待进程结束，获取返回码
+
+        if proc.returncode == 0:
             trainning_status["status"] = "completed"
             trainning_status["message"] = "Training completed successfully."
+            train_logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] ✓ Training completed successfully.")
         else:
             trainning_status["status"] = "failed"
-            trainning_status["message"] = f"Training failed with error: {result.stderr[:200]}" # 只返回错误信息的前200字符，避免过长
+            last_err = train_logs[-1] if train_logs else 'unknown error'
+            trainning_status["message"] = f"Training failed. Last output: {last_err[:200]}"
+            train_logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] ✗ Training failed (exit code {proc.returncode}).")
     except Exception as e:
         trainning_status["status"] = "failed"
         trainning_status["message"] = f"Training failed with exception: {str(e)}"
+        train_logs.append(f"[{datetime.now().strftime('%H:%M:%S')}] ✗ Exception: {str(e)}")
 # =====================
 
 # ===== API端点: 启动训练 =====
 
 @app.post("/api/train/start")
-async def start_training(background_tasks: BackgroundTasks):
+async def start_training(background_tasks: BackgroundTasks, req: TrainRequest = TrainRequest()):
 # ↑ async 表示这是异步函数，FastAPI 能同时处理多个请求而不互相等待
 # ↑ background_tasks 是 FastAPI 内置的特殊参数
 #   只要你在参数里写上它，FastAPI 会自动帮你注入一个 BackgroundTasks 对象
-#   你不需要自己创建，这叫做"依赖注入"
     global trainning_status
     if trainning_status["status"] == "running":
         return {"success": False, "message": "Training is already in progress, do not start a new one."}
         # 返回字典, fastapi自动序列化为json返回给前端
-    background_tasks.add_task(run_training_task)
+    # 将配置转为字典（移除 None 由脚本自身默言处理）
+    config = {k: v for k, v in req.model_dump().items() if v is not None}
+    background_tasks.add_task(run_training_task, config)
     # ↑ 把 run_training_task 函数丢进"后台队列"
     # 关键：这行代码立刻返回，不等训练完成
     # run_training_task 会在后台异步执行（可能跑几分钟甚至几小时）
@@ -97,6 +175,18 @@ async def start_training(background_tasks: BackgroundTasks):
 @ app.get("/api/train/status") # 监听请求用get
 def get_training_status(): # 查询请求很快, 不用异步
     return trainning_status # 直接返回全局字典
+
+
+@app.get("/api/train/logs")
+def get_train_logs(since: int = 0):
+    """
+    增量返回训练日志行。
+    since: 客户端已接收的行数，返回 since 之后的新行，避免重复传输。
+    """
+    return {
+        "lines": train_logs[since:],
+        "total": len(train_logs),
+    }
 
 
 # ===== 工具函数: 解析 Checkpoint 文件夹名 =====
@@ -195,6 +285,9 @@ def list_checkpoints():
         # 检查可用文件
         info["has_pth"]  = os.path.isfile(os.path.join(folder_path, 'checkpoint.pth'))
         info["has_onnx"] = os.path.isfile(os.path.join(folder_path, 'model.onnx'))
+        info["has_pt"]   = os.path.isfile(os.path.join(folder_path, 'model.pt'))
+        # 可用于快速推理的格式（onnx 或 torchscript 均可）
+        info["has_exportable"] = info["has_onnx"] or info["has_pt"]
 
         results.append(info)
 
@@ -241,11 +334,17 @@ def run_inference(req: InferenceRequest):
     ckpt_dir = os.path.join(CHECKPOINTS_DIR, folder_name)
     pth_path  = os.path.join(ckpt_dir, 'checkpoint.pth')
     onnx_path = os.path.join(ckpt_dir, 'model.onnx')
+    pt_path   = os.path.join(ckpt_dir, 'model.pt')
 
     if req.use_onnx:
-        if not os.path.isfile(onnx_path):
-            return {'error': 'model.onnx 不存在，请先导出 ONNX 模型'}
+        has_onnx = os.path.isfile(onnx_path)
+        has_pt   = os.path.isfile(pt_path)
+        if not has_onnx and not has_pt:
+            return {'error': 'model.onnx 和 model.pt 均不存在，请先完成训练'}
+        # 优先用 ONNX，如果不存在则回退到 TorchScript
+        use_torchscript = (not has_onnx and has_pt)
     else:
+        use_torchscript = False
         if not os.path.isfile(pth_path):
             return {'error': 'checkpoint.pth 不存在，请先完成训练'}
 
@@ -300,14 +399,18 @@ def run_inference(req: InferenceRequest):
     # ==============================================================
     # 推理路径 A：ONNX Runtime
     # ==============================================================
-    if req.use_onnx:
+    if req.use_onnx and not use_torchscript:
         import onnxruntime as ort
+
+        # 屏蔽 CUDA Provider 加载失败的冗余警告（Error 126 / cuDNN 版本不匹配）
+        sess_opts = ort.SessionOptions()
+        sess_opts.log_severity_level = 3  # 0=Verbose 1=Info 2=Warning 3=Error 4=Fatal
 
         # GPU → CPU 自动回退
         for providers in (['CUDAExecutionProvider', 'CPUExecutionProvider'],
                           ['CPUExecutionProvider']):
             try:
-                sess = ort.InferenceSession(onnx_path, providers=providers)
+                sess = ort.InferenceSession(onnx_path, sess_options=sess_opts, providers=providers)
                 active_device = sess.get_providers()[0]  # 实际生效的 provider
                 break
             except Exception:
@@ -351,6 +454,40 @@ def run_inference(req: InferenceRequest):
             inputs_list.append(input_vec.tolist())
             preds_list.append(pred_vec.tolist())
             trues_list.append(true_vec.tolist())
+
+    # ==============================================================
+    # 推理路径 A2：TorchScript（.pt格式回退）
+    # ==============================================================
+    elif req.use_onnx and use_torchscript:
+        import torch
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        active_device = str(device)
+        is_linear_type = ('Linear' in info['model']) or ('TST' in info['model'])
+
+        traced_model = torch.jit.load(pt_path, map_location=device)
+        traced_model.eval()
+        print(f'[INFO] 使用 TorchScript 模型进行推理: {pt_path}')
+
+        with torch.no_grad():
+            for i in range(n_infer):
+                batch_x = torch.tensor(data_test[i : i + seq_len]).float().unsqueeze(0).to(device)
+                y_window = data_test[i + seq_len - label_len : i + seq_len + pred_len]
+                batch_y  = torch.tensor(y_window).float().unsqueeze(0).to(device)
+
+                if is_linear_type:
+                    output = traced_model(batch_x)
+                else:
+                    dec_inp = torch.zeros_like(batch_y[:, -pred_len:, :]).float()
+                    dec_inp = torch.cat([batch_y[:, :label_len, :], dec_inp], dim=1).float()
+                    output  = traced_model(batch_x, None, dec_inp, None)
+
+                pred_vec  = output[:, -pred_len:, f_dim:].cpu().numpy()[0, :, -1]
+                true_vec  = batch_y[:, -pred_len:, f_dim:].cpu().numpy()[0, :, -1]
+                input_vec = batch_x[0, :, -1].cpu().numpy()
+
+                inputs_list.append(input_vec.tolist())
+                preds_list.append(pred_vec.tolist())
+                trues_list.append(true_vec.tolist())
 
     # ==============================================================
     # 推理路径 B：PyTorch PTH
@@ -427,7 +564,7 @@ def run_inference(req: InferenceRequest):
 
     return {
         'folder_name':   folder_name,
-        'backend':       'onnx' if req.use_onnx else 'pth',
+        'backend':       'torchscript' if (req.use_onnx and use_torchscript) else ('onnx' if req.use_onnx else 'pth'),
         'active_device': active_device,   # 实际运行设备
         'n_total':   n_test,
         'n_samples': n_infer,
@@ -442,3 +579,109 @@ def run_inference(req: InferenceRequest):
         'trues':  trues_list,
     }
 # =====================
+
+
+# ===========================
+# 脚本参考 API
+# ===========================
+SCRIPTS_DIR = os.path.join(MODEL_SRC_DIR, 'scripts')
+
+# 模型 → 脚本子文件夹映射（不在表中的模型返回空列表）
+MODEL_TO_SCRIPT_FOLDER: dict[str, str] = {
+    'DLinear':  'Linear',
+    'NLinear':  'Linear',
+    'Linear':   'Linear',
+    'PatchTST': 'PatchTST',
+}
+
+def _resolve_sh_variables(content: str) -> dict[str, str]:
+    """提取 shell 脚本顶部的变量赋值，如 seq_len=336。"""
+    variables: dict[str, str] = {}
+    for m in re.finditer(r'^([A-Za-z_]\w*)=([^\n#]*)', content, re.MULTILINE):
+        k, v = m.group(1), m.group(2).strip().strip('"\'')
+        variables[k] = v
+    return variables
+
+def _parse_script_first_block(content: str) -> dict:
+    """从 .sh 文件的第一个 python run_longExp.py 调用中提取参数。"""
+    variables = _resolve_sh_variables(content)
+
+    start = content.find('python -u run_longExp.py')
+    if start == -1:
+        return {}
+    block = content[start:]
+
+    # 截到重定向符号（该调用结束）
+    redirect = re.search(r'>[ \t]*\S', block)
+    if redirect:
+        block = block[:redirect.start()]
+
+    # 合并续行
+    block = block.replace('\\\n', ' ')
+
+    # 跳过不需要回填到 UI 的参数
+    skipped = {'is_training', 'des', 'itr', 'root_path', 'random_seed'}
+    raw: dict[str, str] = {}
+    for m in re.finditer(r'--(\w+)\s+(\S+)', block):
+        key, val = m.group(1), m.group(2)
+        if key in skipped:
+            continue
+        if val.startswith('$'):
+            var_name = val[1:].strip("'\"")
+            val = variables.get(var_name, val)
+        raw[key] = val
+
+    # 字段类型转换
+    int_fields   = {'seq_len', 'pred_len', 'label_len', 'enc_in', 'dec_in', 'c_out',
+                    'd_model', 'n_heads', 'e_layers', 'd_layers', 'd_ff', 'factor',
+                    'batch_size', 'train_epochs', 'patch_len', 'stride', 'moving_avg',
+                    'kernel_size', 'revin', 'affine', 'individual', 'subtract_last', 'decomposition'}
+    float_fields = {'learning_rate', 'dropout', 'fc_dropout', 'head_dropout'}
+
+    result: dict = {}
+    for k, v in raw.items():
+        if k in int_fields:
+            try:    result[k] = int(float(v))
+            except: pass
+        elif k in float_fields:
+            try:    result[k] = float(v)
+            except: pass
+        else:
+            result[k] = v
+
+    # data_path 补充（PatchTST 脚本用变量名存储）
+    if 'data_path' not in result and 'data_path_name' in variables:
+        result['data_path'] = variables['data_path_name']
+
+    return result
+
+
+@app.get('/api/scripts/list')
+def get_script_list(model: str = ''):
+    """返回指定模型的可用参考脚本名列表（不含 .sh 后缀）。"""
+    folder_name = MODEL_TO_SCRIPT_FOLDER.get(model)
+    if not folder_name:
+        return {'scripts': []}
+    folder_path = os.path.join(SCRIPTS_DIR, folder_name)
+    if not os.path.isdir(folder_path):
+        return {'scripts': []}
+    scripts = sorted(
+        f[:-3] for f in os.listdir(folder_path)
+        if f.endswith('.sh') and os.path.isfile(os.path.join(folder_path, f))
+    )
+    return {'scripts': scripts}
+
+
+@app.get('/api/scripts/params')
+def get_script_params(model: str = '', script: str = ''):
+    """解析指定脚本的第一个训练调用，返回可回填 UI 的参数字典。"""
+    folder_name = MODEL_TO_SCRIPT_FOLDER.get(model)
+    if not folder_name or not script:
+        return {'params': {}}
+    sh_path = os.path.join(SCRIPTS_DIR, folder_name, script + '.sh')
+    if not os.path.isfile(sh_path):
+        return {'params': {}}
+    with open(sh_path, encoding='utf-8', errors='replace') as f:
+        content = f.read()
+    return {'params': _parse_script_first_block(content)}
+# ===========================

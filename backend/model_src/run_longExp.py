@@ -15,8 +15,8 @@ parser.add_argument('--random_seed', type=int, default=2021, help='random seed')
 
 # basic config
 parser.add_argument('--is_training', type=int, default=1, help='status')
-parser.add_argument('--model_id', type=str, default='ETTh1_336_96', help='model id')
-parser.add_argument('--model', type=str, default='DLinear',
+parser.add_argument('--model_id', type=str, default=None, help='model id')
+parser.add_argument('--model', type=str, default='PatchTST',
                     help='model name, options: [Autoformer, Informer, Transformer, DLinear, PatchTST]')
 
 # data loader
@@ -79,7 +79,7 @@ parser.add_argument('--num_workers', type=int, default=0, help='data loader num 
 parser.add_argument('--itr', type=int, default=1, help='experiments times')
 parser.add_argument('--train_epochs', type=int, default=50, help='train epochs')
 parser.add_argument('--batch_size', type=int, default=64, help='batch size of train input data')
-parser.add_argument('--patience', type=int, default=10, help='early stopping patience')
+parser.add_argument('--patience', type=int, default=5, help='early stopping patience')
 parser.add_argument('--learning_rate', type=float, default=0.005, help='optimizer learning rate')
 parser.add_argument('--des', type=str, default='Exp', help='exp description')
 parser.add_argument('--loss', type=str, default='mse', help='loss function')
@@ -95,6 +95,8 @@ parser.add_argument('--devices', type=str, default='0,1,2,3', help='device ids o
 parser.add_argument('--test_flop', action='store_true', default=False, help='See utils/tools for usage')
 
 args = parser.parse_args()
+
+args.model_id = args.data + '_' + str(args.seq_len) + '_' + str(args.pred_len)
 
 if __name__ == '__main__':
     # random seed
