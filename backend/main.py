@@ -1,12 +1,14 @@
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from datetime import datetime
 import os
 import sys
 import subprocess
 import re
-from typing import Optional
+import json
+from typing import Optional, List
 
 # ---- model_src 加入 Python 搜索路径（用于推理时导入模型/数据集） ----
 MODEL_SRC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'model_src')
@@ -684,4 +686,71 @@ def get_script_params(model: str = '', script: str = ''):
     with open(sh_path, encoding='utf-8', errors='replace') as f:
         content = f.read()
     return {'params': _parse_script_first_block(content)}
+# ===========================
+
+
+# ===========================
+# AI 助手 —— 流式聊天代理
+# ===========================
+class _AssistantMsg(BaseModel):
+    role:    str
+    content: str
+
+class AssistantChatRequest(BaseModel):
+    messages: List[_AssistantMsg]
+    model:    str = 'gpt-4o'
+    api_key:  str = ''
+    base_url: str = 'https://api.openai.com/v1'
+
+
+@app.get('/api/assistant/models')
+def get_assistant_models(api_key: str = '', base_url: str = 'https://api.openai.com/v1'):
+    """拉取指定 API 可用的模型列表。"""
+    if not api_key.strip():
+        return {'models': [], 'error': '请先配置 API Key'}
+    try:
+        from openai import OpenAI
+        client = OpenAI(api_key=api_key, base_url=base_url)
+        page   = client.models.list()
+        ids    = sorted(m.id for m in page.data)
+        return {'models': ids}
+    except Exception as e:
+        return {'models': [], 'error': str(e)}
+
+
+@app.post('/api/assistant/chat')
+async def assistant_chat(req: AssistantChatRequest):
+    """流式代理到 OpenAI 兼容 API，以 SSE 形式返回给前端。"""
+
+    # 缺少 API Key
+    if not req.api_key.strip():
+        async def _no_key():
+            yield f"data: {json.dumps({'error': '请先在设置中配置 API Key'})}\n\n"
+        return StreamingResponse(_no_key(), media_type='text/event-stream')
+
+    # 动态导入 openai
+    try:
+        from openai import OpenAI
+    except ImportError:
+        async def _no_lib():
+            yield f"data: {json.dumps({'error': 'openai 库未安装，请运行 pip install openai'})}\n\n"
+        return StreamingResponse(_no_lib(), media_type='text/event-stream')
+
+    client = OpenAI(api_key=req.api_key, base_url=req.base_url)
+
+    def _stream():
+        try:
+            resp = client.chat.completions.create(
+                model=req.model,
+                messages=[{'role': m.role, 'content': m.content} for m in req.messages],
+                stream=True,
+            )
+            for chunk in resp:
+                if chunk.choices and chunk.choices[0].delta.content:
+                    yield f"data: {json.dumps({'content': chunk.choices[0].delta.content})}\n\n"
+            yield 'data: [DONE]\n\n'
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+
+    return StreamingResponse(_stream(), media_type='text/event-stream')
 # ===========================
