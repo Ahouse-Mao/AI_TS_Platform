@@ -12,6 +12,7 @@ import { InferencePage }   from './pages/InferencePage'
 import { LoginPage }       from './pages/LoginPage'
 import { RegisterPage }    from './pages/RegisterPage'
 import { ProtectedRoute }  from './components/ProtectedRoute'
+import { RAGPage }         from './pages/RAGPage'
 import { useAuth, setupAxiosAuth } from './hooks/useAuth'
 
 // ── 全局 axios 拦截器：所有请求自动附加 Bearer Token ──
@@ -22,6 +23,7 @@ const TABS = [
   { path: '/train',     label: '模型训练与配置' },
   { path: '/predict',   label: '模型预测' },
   { path: '/assistant', label: 'AI 助手' },
+  { path: '/rag',       label: 'RAG构建' },
 ]
 
 // 页面背景色
@@ -179,6 +181,7 @@ function App() {
               <Route path="/predict"            element={<PredictPage checkpoints={checkpoints} loading={checkpointsLoading} error={checkpointsError} onRefresh={refreshCheckpoints} />} />
               <Route path="/predict/:folderName" element={<InferencePage />} />
               <Route path="/assistant"           element={<AssistantPage />} />
+              <Route path="/rag"                 element={<RAGPage />} />
             </Route>
 
             {/* ── 兜底重定向 ── */}

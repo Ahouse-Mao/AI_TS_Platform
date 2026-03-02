@@ -20,6 +20,7 @@ const SK_CONVOS   = 'ai_ts_convos'
 const SK_SETTINGS = 'ai_ts_settings'
 const SK_MODEL    = 'ai_ts_model'
 const SK_FETCHED_MODELS = 'ai_ts_fetched_models'
+const SK_USE_RAG  = 'ai_ts_use_rag'
 
 const MODELS = [
   { value: 'gpt-4o',            label: 'GPT-4o' },
@@ -64,6 +65,7 @@ export function AssistantPage() {
   const [input,      setInput]      = useState('')
   const [streaming,  setStreaming]  = useState(false)
   const [streamText, setStreamText] = useState('')
+  const [useRag,     setUseRag]     = useState<boolean>(() => load(SK_USE_RAG, true))
 
   /* ── UI 状态 ── */
   const [showSettings, setShowSettings] = useState(false)
@@ -81,6 +83,7 @@ export function AssistantPage() {
   useEffect(() => { localStorage.setItem(SK_MODEL,          JSON.stringify(model)) },         [model])
   useEffect(() => { localStorage.setItem(SK_SETTINGS,       JSON.stringify(settings)) },      [settings])
   useEffect(() => { localStorage.setItem(SK_FETCHED_MODELS, JSON.stringify(fetchedModels)) }, [fetchedModels])
+  useEffect(() => { localStorage.setItem(SK_USE_RAG,        JSON.stringify(useRag)) },        [useRag])
 
   /* ── 消息变化时自动滚动到底部 ── */
   useEffect(() => {
@@ -155,7 +158,7 @@ export function AssistantPage() {
       const res = await fetch(`${API}/api/assistant/chat`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ messages: apiMsgs, model, api_key: settings.apiKey, base_url: settings.baseUrl }),
+        body:    JSON.stringify({ messages: apiMsgs, model, api_key: settings.apiKey, base_url: settings.baseUrl, use_rag: useRag }),
         signal:  abort.signal,
       })
 
@@ -197,7 +200,7 @@ export function AssistantPage() {
     setStreaming(false)
     setStreamText('')
     abortRef.current = null
-  }, [input, streaming, activeId, convos, settings, model])
+  }, [input, streaming, activeId, convos, settings, model, useRag])
 
   /* ── 停止生成 ── */
   const stop = useCallback(() => { abortRef.current?.abort() }, [])
@@ -397,6 +400,34 @@ export function AssistantPage() {
 
           {/* ── 输入区域 ── */}
           <div style={{ borderTop: '1px solid #2a2a3d', padding: '16px 24px', flexShrink: 0 }}>
+
+            {/* RAG 开关 */}
+            <div style={{ maxWidth: '760px', margin: '0 auto 8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                onClick={() => setUseRag(p => !p)}
+                style={{
+                  display:      'flex',
+                  alignItems:   'center',
+                  gap:          '5px',
+                  padding:      '3px 10px',
+                  borderRadius: '12px',
+                  fontSize:     '12px',
+                  fontWeight:   'bold',
+                  cursor:       'pointer',
+                  border:       `1px solid ${useRag ? '#7b5ea7' : '#3a3a55'}`,
+                  background:   useRag ? '#2a1a40' : 'transparent',
+                  color:        useRag ? '#c0a0f0' : '#555',
+                  transition:   'all 0.2s',
+                }}
+                title={useRag ? '已启用 RAG 知识库检索，点击关闭' : '已禁用 RAG，点击启用'}
+              >
+                <span style={{ fontSize: '10px' }}>🔍</span>
+                RAG检索 {useRag ? '已启用' : '已禁用'}
+              </button>
+              {useRag && (
+                <span style={{ fontSize: '11px', color: '#555' }}>每条消息将自动检索知识库并注入上下文</span>
+              )}
+            </div>
             <div style={{ maxWidth: '760px', margin: '0 auto', display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
               <textarea ref={inputRef} value={input}
                 onChange={handleInput}

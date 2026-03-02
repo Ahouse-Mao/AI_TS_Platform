@@ -126,14 +126,15 @@ def run_training_task(config: dict):
         # 将配置字典转为 CLI 参数，bool 值转为 True/False 字符串
         args_parts = []
         for key, value in config.items():
-            if isinstance(value, bool):
+            if isinstance(value, bool): # 判断是否为bool值, 如果是则转换为字符串
                 args_parts.append(f'--{key} {str(value)}')
             else:
                 args_parts.append(f'--{key} {value}')
         args_str = ' '.join(args_parts)
 
-        # 使用 Popen 逐行实时读取输出，写入日志缓冲区
         # encoding + errors 防止 Windows 上 GBK/UTF-8 混合编码导致读取崩溃
+        # subprocess是Python内置的模块，用于创建和管理子进程，允许在 Python 脚本中运行外部命令或程序，并与之进行交互。
+        # Popen 是 subprocess 模块中的一个类，用于启动一个新的进程并连接到它的输入/输出/错误管道。相比于 subprocess.run() 等高级接口，Popen 提供了更底层的控制能力，允许你在进程运行时实时读取输出、发送输入、检查状态等。
         proc = subprocess.Popen(
             f'conda activate {env_name} && python -u "{script_path}" {args_str}',
             shell=True,
@@ -148,7 +149,7 @@ def run_training_task(config: dict):
 
         # 逐行读取并追加到日志缓冲区
         for line in proc.stdout:  # type: ignore[union-attr]
-            line = line.rstrip('\n')
+            line = line.rstrip('\n') # 去除行尾换行符，保持日志整洁
             if line:
                 train_logs.append(line)
 
@@ -175,8 +176,9 @@ def run_training_task(config: dict):
 async def start_training(background_tasks: BackgroundTasks, req: TrainRequest = TrainRequest()):
 # ↑ async 表示这是异步函数，FastAPI 能同时处理多个请求而不互相等待
 # ↑ background_tasks 是 FastAPI 内置的特殊参数
+# TrainRequest在上面定义了训练请求体的结构和默认值，FastAPI 会自动解析 JSON 请求体并创建 TrainRequest 实例传入 req 参数
 #   只要你在参数里写上它，FastAPI 会自动帮你注入一个 BackgroundTasks 对象
-    global trainning_status
+    global trainning_status # 声明自己要用的是全局变量, 避免生成局部变量
     if trainning_status["status"] == "running":
         return {"success": False, "message": "Training is already in progress, do not start a new one."}
         # 返回字典, fastapi自动序列化为json返回给前端
@@ -205,7 +207,7 @@ def get_train_logs(since: int = 0):
     since: 客户端已接收的行数，返回 since 之后的新行，避免重复传输。
     """
     return {
-        "lines": train_logs[since:],
+        "lines": train_logs[since:], # 取增量日志
         "total": len(train_logs),
     }
 
@@ -357,14 +359,14 @@ def run_inference(req: InferenceRequest):
     onnx_path = os.path.join(ckpt_dir, 'model.onnx')
     pt_path   = os.path.join(ckpt_dir, 'model.pt')
 
-    if req.use_onnx:
+    if req.use_onnx: # 使用onnx，不满足则退回pth
         has_onnx = os.path.isfile(onnx_path)
         has_pt   = os.path.isfile(pt_path)
         if not has_onnx and not has_pt:
             return {'error': 'model.onnx 和 model.pt 均不存在，请先完成训练'}
         # 优先用 ONNX，如果不存在则回退到 TorchScript
         use_torchscript = (not has_onnx and has_pt)
-    else:
+    else: # 不适用onnx，直接用pth
         use_torchscript = False
         if not os.path.isfile(pth_path):
             return {'error': 'checkpoint.pth 不存在，请先完成训练'}
@@ -717,9 +719,10 @@ class _AssistantMsg(BaseModel):
 
 class AssistantChatRequest(BaseModel):
     messages: List[_AssistantMsg]
-    model:    str = 'gpt-4o'
-    api_key:  str = ''
-    base_url: str = 'https://api.openai.com/v1'
+    model:    str  = 'gpt-4o'
+    api_key:  str  = ''
+    base_url: str  = 'https://api.openai.com/v1'
+    use_rag:  bool = True
 
 
 @app.get('/api/assistant/models')
@@ -755,13 +758,52 @@ async def assistant_chat(req: AssistantChatRequest):
             yield f"data: {json.dumps({'error': 'openai 库未安装，请运行 pip install openai'})}\n\n"
         return StreamingResponse(_no_lib(), media_type='text/event-stream')
 
+    # 构建消息列表
+    messages = [{'role': m.role, 'content': m.content} for m in req.messages]
+
+    # ── RAG 上下文注入 ──
+    if req.use_rag:
+        try:
+            import os as _os
+            _os.environ['HF_HUB_OFFLINE'] = '1'
+            from .RAG.rag import load_index, PERSIST_DIR
+            if _os.path.exists(PERSIST_DIR):
+                user_msgs = [m for m in req.messages if m.role == 'user']
+                if user_msgs:
+                    query  = user_msgs[-1].content
+                    vs     = load_index()
+                    docs   = vs.similarity_search(query, k=3)
+                    if docs:
+                        context = '\n\n'.join(
+                            f"[参考{i+1}] {d.page_content}" for i, d in enumerate(docs)
+                        )
+                        rag_sys = (
+                            "以下是从本平台训练脚本知识库中检索到的相关参数推荐，"
+                            "请结合这些信息回答用户问题：\n\n"
+                            f"{context}\n\n"
+                            "若以上参考与问题无关，请基于通用知识回答。"
+                        )
+                        sys_idx = next(
+                            (i for i, m in enumerate(messages) if m['role'] == 'system'), None
+                        )
+                        if sys_idx is not None:
+                            messages[sys_idx] = {
+                                'role':    'system',
+                                'content': messages[sys_idx]['content'] + '\n\n' + rag_sys,
+                            }
+                        else:
+                            messages.insert(0, {'role': 'system', 'content': rag_sys})
+        except Exception:
+            pass  # RAG 失败时静默降级，不影响正常对话
+    # ────────────────────
+
     client = OpenAI(api_key=req.api_key, base_url=req.base_url)
 
     def _stream():
         try:
             resp = client.chat.completions.create(
                 model=req.model,
-                messages=[{'role': m.role, 'content': m.content} for m in req.messages],
+                messages=messages,
                 stream=True,
             )
             for chunk in resp:
@@ -773,3 +815,109 @@ async def assistant_chat(req: AssistantChatRequest):
 
     return StreamingResponse(_stream(), media_type='text/event-stream')
 # ===========================
+
+
+rag_build_status = {
+    "status": "idle",  # idle, running, completed, failed
+    "message": "No rag build in progress.",
+    "start_time": None,
+    "doc_count": None,
+}
+
+# RAG 构建专用日志缓冲区（与训练日志分离）
+rag_logs: list[str] = []
+
+
+# ===== RAG 请求体 =====
+class RAGBuildRequest(BaseModel):
+    embedding_model: str = 'BAAI/bge-base-zh-v1.5'
+# =====================
+
+
+# ===== 后台任务：执行 RAG 构建 =====
+def run_rag_build_task(embedding_model: str):
+    global rag_build_status, rag_logs
+
+    import os, traceback
+    # 强制离线模式，防止 HuggingFace 尝试联网导致挂起
+    os.environ["HF_HUB_OFFLINE"] = "1"
+
+    def _log(msg: str):
+        """带时间戳写入日志缓冲区，同时打印到 uvicorn 控制台。"""
+        entry = f"[{datetime.now().strftime('%H:%M:%S')}] {msg}"
+        rag_logs.append(entry)
+        print(entry, flush=True)
+
+    try:
+        from .RAG.rag import build_index
+
+        _log("开始构建 RAG 向量索引...")
+        _log(f"使用嵌入模型: {embedding_model}")
+
+        vectorstore = build_index(model_name=embedding_model, log_fn=_log)
+
+        doc_count = vectorstore._collection.count()
+        _log(f"✓ 向量索引构建完成，共 {doc_count} 条文档")
+
+        rag_build_status["status"]    = "completed"
+        rag_build_status["message"]   = f"构建完成，共 {doc_count} 条文档"
+        rag_build_status["doc_count"] = doc_count
+
+    except Exception as e:
+        tb = traceback.format_exc()
+        rag_build_status["status"]  = "failed"
+        rag_build_status["message"] = f"构建失败: {str(e)}"
+        _log(f"✗ 构建失败: {str(e)}")
+        for line in tb.splitlines():
+            _log(line)
+# =====================
+
+
+@app.post('/api/rag/build')
+async def rag_build(background_tasks: BackgroundTasks, req: RAGBuildRequest = RAGBuildRequest()):
+    global rag_build_status, rag_logs
+
+    if rag_build_status["status"] == "running":
+        return {"success": False, "message": "RAG 构建正在进行中，请稍候"}
+
+    # 重置状态和日志
+    rag_logs.clear()
+    rag_build_status = {
+        "status":    "running",
+        "message":   "RAG 构建已启动...",
+        "start_time": datetime.now().isoformat(),
+        "doc_count": None,
+    }
+
+    # 放入后台执行，立即返回（与训练任务相同模式）
+    background_tasks.add_task(run_rag_build_task, req.embedding_model)
+
+    return {"success": True, "message": "RAG 构建任务已启动"}
+
+
+@app.get('/api/rag/status')
+def get_rag_status():
+    """返回 RAG 构建状态和日志（前端轮询用）。"""
+    return {
+        **rag_build_status,
+        "logs": rag_logs,
+    }
+
+
+@app.delete('/api/rag/index')
+def delete_rag_index():
+    """清除持久化向量库目录（构建进行中时拒绝）。"""
+    global rag_build_status, rag_logs
+    if rag_build_status["status"] == "running":
+        return {"success": False, "message": "RAG 构建正在进行中，无法清除"}
+    from .RAG.rag import clear_index
+    result = clear_index()
+    # 同步重置状态
+    rag_logs.clear()
+    rag_build_status = {
+        "status":     "idle",
+        "message":    "向量库已清除。",
+        "start_time": None,
+        "doc_count":  None,
+    }
+    return result
