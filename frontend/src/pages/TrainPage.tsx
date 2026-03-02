@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import type { TrainingStatus, TrainConfig } from '../types'
+import { API_BASE } from '../config'
 
-const API = 'http://localhost:8000'
+// TrainPage 内部不再独立发起网络请求，仅保留 API_BASE 供内部自局部备用️
 
 // ===================== 模型定义 =====================
 type ModelFamily = 'linear' | 'transformer' | 'patchtst' | 'stat'
@@ -127,7 +128,7 @@ export function TrainPage({ trainingStatus, isLoading, onStartTraining, trainLog
   // 模型切换时：重置脚本选择并重新拉取脚本列表
   useEffect(() => {
     setSelectedScript('')
-    fetch(`${API}/api/scripts/list?model=${selectedModel}`)
+    fetch(`${API_BASE}/api/scripts/list?model=${selectedModel}`)
       .then(r => r.json())
       .then(d => setScriptList(d.scripts ?? []))
       .catch(() => setScriptList([]))
@@ -139,7 +140,7 @@ export function TrainPage({ trainingStatus, isLoading, onStartTraining, trainLog
     if (!script) return
     setScriptLoading(true)
     try {
-      const res  = await fetch(`${API}/api/scripts/params?model=${selectedModel}&script=${script}`)
+      const res  = await fetch(`${API_BASE}/api/scripts/params?model=${selectedModel}&script=${script}`)
       const data = await res.json() as { params: Record<string, unknown> }
       const p    = data.params
       if (!p || Object.keys(p).length === 0) return

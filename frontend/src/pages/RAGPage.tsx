@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-
-const API = 'http://localhost:8000'
+import axios from 'axios'
+import { API_BASE } from '../config'
 
 const EMBEDDING_MODELS = [
   { value: 'BAAI/bge-small-zh-v1.5', label: 'BGE Small ZH（轻量，512维）' },
@@ -50,17 +50,12 @@ export function RAGPage() {
     setBuildStatus({ status: 'running', message: '正在构建索引向量...' })
 
     try {
-      // 1. POST 请求，body 携带 { embedding_model }
-      await fetch(`${API}/api/rag/build`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ embedding_model: selectedModel }),
-      })
-      // 2. 轮询构建状态，任务在后台执行，前端每秒查询状态和日志
+      await axios.post(`${API_BASE}/api/rag/build`, { embedding_model: selectedModel })
+
+      // 轮询构建状态，任务在后台执行，前端每秒查询一次
       const poll = setInterval(async () => {
         try {
-          const res  = await fetch(`${API}/api/rag/status`)
-          const data = await res.json() as RAGBuildState & { logs: string[] }
+          const { data } = await axios.get<RAGBuildState & { logs: string[] }>(`${API_BASE}/api/rag/status`)
           setBuildLogs(data.logs ?? [])
           setBuildStatus({ status: data.status, message: data.message, doc_count: data.doc_count, start_time: data.start_time })
           if (data.status === 'completed' || data.status === 'failed') {
@@ -83,8 +78,7 @@ export function RAGPage() {
     if (!window.confirm('确定要清除向量库吗？此操作不可恢复，需要重新构建。')) return
     setIsClearing(true)
     try {
-      const res  = await fetch(`${API}/api/rag/index`, { method: 'DELETE' })
-      const data = await res.json() as { success: boolean; message: string }
+      const { data } = await axios.delete<{ success: boolean; message: string }>(`${API_BASE}/api/rag/index`)
       setBuildLogs(prev => [...prev, `[清除] ${data.message}`])
       setBuildStatus(null)
     } catch {

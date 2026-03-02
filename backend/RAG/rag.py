@@ -127,12 +127,12 @@ def build_index(model_name: str = "BAAI/bge-base-zh-v1.5", log_fn=print) -> Chro
 
     # 2. 手写的模型元信息（通用背景知识）
     texts = [
-        "PatchTST模型：适用于长序列预测，利用了Transformer架构和Patching技术，计算效率高且能捕获局部语义。",
+        "PatchTST模型：适用于长序列预测，利用了Transformer架构和Patching技术，计算效率高且能捕获局部语义，速度较快。",
         "DLinear模型：一个极其简单的线性模型，在某些明显带有周期性和趋势性的单变量或多变量数据集上表现极好，且训练极快。",
-        "NLinear模型：在DLinear基础上加入了减去最后一个时间步的归一化技巧，在分布偏移场景下效果更好。",
-        "Autoformer模型：采用分解架构，内置了序列分解模块，并在自注意力机制上做了创新，适合复杂时序。",
-        "Informer模型：使用ProbSparse稀疏注意力机制，适合超长序列预测，降低了Transformer的平方复杂度。",
-        "Transformer模型：标准Transformer用于时序预测，适合中等长度序列，配置灵活但计算量较大。",
+        "NLinear模型：在DLinear基础上加入了减去最后一个时间步的归一化技巧，在分布偏移场景下效果更好，速度快。",
+        "Autoformer模型：采用分解架构，内置了序列分解模块，并在自注意力机制上做了创新，适合复杂时序，但是速度较慢。",
+        "Informer模型：使用ProbSparse稀疏注意力机制，适合超长序列预测，降低了Transformer的平方复杂度，但是速度较慢。",
+        "Transformer模型：标准Transformer用于时序预测，适合中等长度序列，配置灵活但计算量较大，速度很慢。",
     ]
 
     # 3. 从 .sh 脚本动态提取参数推荐

@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import { BrowserRouter, Routes, Route, NavLink, Navigate } from 'react-router-dom'
 import type { TrainingStatus, CheckpointInfo, TrainConfig } from './types'
+import { API_BASE } from './config'
 import { TrainPage }       from './pages/TrainPage'
 import { PredictPage }     from './pages/PredictPage'
 import { AssistantPage }   from './pages/AssistantPage'
@@ -49,7 +50,7 @@ function App() {
   const [checkpointsError,   setCheckpointsError]   = useState<string | null>(null)
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/predict/checkpoints')
+    axios.get(`${API_BASE}/api/predict/checkpoints`)
       .then(res  => setCheckpoints(res.data))
       .catch(err => setCheckpointsError('获取 Checkpoint 列表失败：' + err.message))
       .finally(() => setCheckpointsLoading(false))
@@ -59,7 +60,7 @@ function App() {
   const refreshCheckpoints = () => {
     setCheckpointsLoading(true)
     setCheckpointsError(null)
-    axios.get('http://localhost:8000/api/predict/checkpoints')
+    axios.get(`${API_BASE}/api/predict/checkpoints`)
       .then(res  => setCheckpoints(res.data))
       .catch(err => setCheckpointsError('获取 Checkpoint 列表失败：' + err.message))
       .finally(() => setCheckpointsLoading(false))
@@ -72,8 +73,8 @@ function App() {
     logPollRef.current = setInterval(async () => {
       try {
         const [statusRes, logRes] = await Promise.all([
-          axios.get('http://localhost:8000/api/train/status'),
-          axios.get(`http://localhost:8000/api/train/logs?since=${logOffset}`),
+          axios.get(`${API_BASE}/api/train/status`),
+          axios.get(`${API_BASE}/api/train/logs?since=${logOffset}`),
         ])
         setTrainingStatus(statusRes.data)
         const { lines, total } = logRes.data as { lines: string[]; total: number }
@@ -94,7 +95,7 @@ function App() {
     try {
       setIsTrainLoading(true)
       setTrainLogs([])
-      const response = await axios.post('http://localhost:8000/api/train/start', config)
+      const response = await axios.post(`${API_BASE}/api/train/start`, config)
       if (response.data.success) {
         setTimeout(startPollingStatus, 800)
       }

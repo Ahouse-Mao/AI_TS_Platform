@@ -78,3 +78,18 @@ export interface CheckpointInfo {
   has_pth?:       boolean
   has_onnx?:      boolean
 }
+
+// 推理结果（由 /api/predict/run 返回）
+export interface InferenceResult {
+  folder_name:   string
+  backend:       'pth' | 'onnx' | 'torchscript'
+  active_device: string
+  n_total:       number
+  n_samples:     number
+  seq_len:       number
+  pred_len:      number
+  metrics:       { mse: number; mae: number }
+  inputs:        number[][]
+  preds:         number[][]
+  trues:         number[][]
+}

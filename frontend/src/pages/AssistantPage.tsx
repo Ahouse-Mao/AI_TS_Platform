@@ -1,7 +1,7 @@
 // ===================== AI 助手聊天页面 =====================
 import { useState, useEffect, useRef, useCallback } from 'react'
-
-const API = 'http://localhost:8000'
+import { API_BASE } from '../config'
+import { lsGet, lsSet } from '../utils/storage'
 
 /* ================================================================
    类型
@@ -45,10 +45,7 @@ const QUICK_PROMPTS = [
 /* helpers */
 const uid   = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8)
 const trunc = (s: string, n: number) => (s.length > n ? s.slice(0, n) + '…' : s)
-function load<T>(key: string, fallback: T): T {
-  try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback }
-  catch { return fallback }
-}
+function load<T>(key: string, fallback: T): T { return lsGet(key, fallback) }
 
 /* ================================================================
    主组件
@@ -79,11 +76,11 @@ export function AssistantPage() {
   const abortRef    = useRef<AbortController | null>(null)
 
   /* ── 持久化到 localStorage ── */
-  useEffect(() => { localStorage.setItem(SK_CONVOS,         JSON.stringify(convos)) },        [convos])
-  useEffect(() => { localStorage.setItem(SK_MODEL,          JSON.stringify(model)) },         [model])
-  useEffect(() => { localStorage.setItem(SK_SETTINGS,       JSON.stringify(settings)) },      [settings])
-  useEffect(() => { localStorage.setItem(SK_FETCHED_MODELS, JSON.stringify(fetchedModels)) }, [fetchedModels])
-  useEffect(() => { localStorage.setItem(SK_USE_RAG,        JSON.stringify(useRag)) },        [useRag])
+  useEffect(() => { lsSet(SK_CONVOS,         convos) },        [convos])
+  useEffect(() => { lsSet(SK_MODEL,          model) },         [model])
+  useEffect(() => { lsSet(SK_SETTINGS,       settings) },      [settings])
+  useEffect(() => { lsSet(SK_FETCHED_MODELS, fetchedModels) }, [fetchedModels])
+  useEffect(() => { lsSet(SK_USE_RAG,        useRag) },        [useRag])
 
   /* ── 消息变化时自动滚动到底部 ── */
   useEffect(() => {
@@ -155,7 +152,7 @@ export function AssistantPage() {
       const abort = new AbortController()
       abortRef.current = abort
 
-      const res = await fetch(`${API}/api/assistant/chat`, {
+      const res = await fetch(`${API_BASE}/api/assistant/chat`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ messages: apiMsgs, model, api_key: settings.apiKey, base_url: settings.baseUrl, use_rag: useRag }),
@@ -570,7 +567,7 @@ function SettingsModal({ settings, initialFetchedModels, onSave, onClose }: {
     setFetchError('')
     try {
       const params = new URLSearchParams({ api_key: temp.apiKey, base_url: temp.baseUrl })
-      const res  = await fetch(`${API}/api/assistant/models?${params}`)
+      const res  = await fetch(`${API_BASE}/api/assistant/models?${params}`)
       const data = await res.json() as { models: string[]; error?: string }
       if (data.error) { setFetchError(data.error); return }
       setFetchedModels(data.models)

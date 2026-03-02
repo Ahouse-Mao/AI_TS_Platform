@@ -1,32 +1,20 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import type { CheckpointInfo } from '../types'
+import type { CheckpointInfo, InferenceResult } from '../types'
 import { InfoItem } from '../components/InfoItem'
+import { ssGet, ssSet } from '../utils/storage'
+import { API_BASE } from '../config'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer,
 } from 'recharts'
 
 // ===================== 类型 =====================
-interface InferenceMetrics {
-  mse: number
-  mae: number
-}
+// InferenceResult 已移至 src/types.ts 统一管理
 
-interface InferenceResult {
-  folder_name:   string
-  backend:       'pth' | 'onnx'
-  active_device: string   // 实际运行设备，e.g. 'cuda' | 'cpu' | 'CUDAExecutionProvider'
-  n_total:       number
-  n_samples:     number
-  seq_len:       number
-  pred_len:      number
-  metrics:       InferenceMetrics
-  inputs:        number[][]
-  preds:         number[][]
-  trues:         number[][]
-}
+// sessionStorage 辅助：按 folderName 维度读写 JSON
+// 已提取到 src/utils/storage.ts
 
 // ===================== 主组件 =====================
 export function InferencePage() {
@@ -37,17 +25,25 @@ export function InferencePage() {
   const [ckptLoading,   setCkptLoading]   = useState<boolean>(true)
   const [isLeaving,     setIsLeaving]     = useState<boolean>(false)
 
-  const [nSamples,      setNSamples]      = useState<number>(200)
-  const [useOnnx,       setUseOnnx]       = useState<boolean>(false)
+  const ssNKey = `infer_nsamples_${folderName}`
+  const ssOKey = `infer_onnx_${folderName}`
+  const ssRKey = `infer_result_${folderName}`
+
+  const [nSamples,      setNSamples]      = useState<number>(() => ssGet(ssNKey, 200))
+  const [useOnnx,       setUseOnnx]       = useState<boolean>(() => ssGet(ssOKey, false))
 
   const [inferLoading,  setInferLoading]  = useState<boolean>(false)
   const [inferError,    setInferError]    = useState<string | null>(null)
-  const [inferResult,   setInferResult]   = useState<InferenceResult | null>(null)
+  const [inferResult,   setInferResult]   = useState<InferenceResult | null>(() => ssGet<InferenceResult | null>(ssRKey, null))
+
+  // 持久化设置参数到 sessionStorage
+  useEffect(() => { ssSet(ssNKey, nSamples) }, [nSamples])    // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { ssSet(ssOKey, useOnnx)  }, [useOnnx])     // eslint-disable-line react-hooks/exhaustive-deps
 
   // 拉取 checkpoint 列表，找到当前项
   useEffect(() => {
     if (!folderName) return
-    axios.get('http://localhost:8000/api/predict/checkpoints')
+    axios.get(`${API_BASE}/api/predict/checkpoints`)
       .then(res => {
         const found = (res.data as CheckpointInfo[]).find(c => c.folder_name === folderName)
         setCkpt(found ?? null)
@@ -63,14 +59,18 @@ export function InferencePage() {
     setInferLoading(true)
 
     // TODO: 默认方案改为 ONNX 轻量推理，当前暂用 PTH
-    axios.post('http://localhost:8000/api/predict/run', {
+    axios.post(`${API_BASE}/api/predict/run`, {
       folder_name: folderName,
       n_samples:   nSamples,
       use_onnx:    useOnnx,
     })
       .then(res => {
         if (res.data.error) setInferError(res.data.error)
-        else                setInferResult(res.data as InferenceResult)
+        else {
+          const result = res.data as InferenceResult
+          setInferResult(result)
+          ssSet(ssRKey, result)   // 持久化到 sessionStorage
+        }
       })
       .catch(err => setInferError('推理请求失败：' + err.message))
       .finally(() => setInferLoading(false))
