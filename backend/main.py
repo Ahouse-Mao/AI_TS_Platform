@@ -15,8 +15,27 @@ MODEL_SRC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'model_
 if MODEL_SRC_DIR not in sys.path:
     sys.path.insert(0, MODEL_SRC_DIR)
 
+# ---- 数据库 & 认证路由 ----
+from .database        import engine, Base
+from .models          import User          # noqa: F401 — 确保 ORM 模型被注册到 Base.metadata
+from .routers.auth    import router as auth_router
+
 # 创建 FastAPI 实例
 app = FastAPI()
+
+# ---- 应用启动时自动建表（幂等：表已存在则跳过） ----
+# 迁移到 PostgreSQL 后此行无需改动；
+# 如需版本化迁移（字段增删改），改用 Alembic：
+#   pip install alembic
+#   alembic init alembic
+#   alembic revision --autogenerate -m "init"
+#   alembic upgrade head
+@app.on_event("startup")
+def startup_create_tables():
+    Base.metadata.create_all(bind=engine)
+
+# ---- 挂载认证路由 (/api/auth/register, /api/auth/login, /api/auth/me) ----
+app.include_router(auth_router)
 
 # ===== 配置 CORS =====
 app.add_middleware(

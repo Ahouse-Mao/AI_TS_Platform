@@ -367,8 +367,7 @@ export function AssistantPage() {
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 height: '100%', color: '#555', gap: '16px',
               }}>
-                <div style={{ fontSize: '48px', opacity: 0.3 }}>🤖</div>
-                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#888' }}>AI 助手</div>
+                <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#888' }}>时序预测 AI 助手</div>
                 <div style={{ fontSize: '13px', color: '#555', textAlign: 'center', maxWidth: '420px', lineHeight: '1.7' }}>
                   我可以帮你理解时序预测模型、调优训练参数、<br />分析预测结果，或回答任何技术问题。
                 </div>
