@@ -1,0 +1,89 @@
+{
+  "mode": "struct",
+  "samples": 5,
+  "top_k": 3,
+  "assistant_url": "http://localhost:8000/api/assistant/chat",
+  "generator_model": "qwen3.5-flash",
+  "judge_model": "qwen3.5-plus",
+  "judge_embedding_model": "text-embedding-v4",
+  "summary": {
+    "answer_relevancy": 0.9383141690128435,
+    "faithfulness": 0.0,
+    "context_precision": 0.49999999998333333,
+    "context_recall": 0.2
+  },
+  "details": [
+    {
+      "user_input": "在 ETTh1 数据集上做 pred_len=96 的预测，PatchTST 推荐配置是什么？",
+      "retrieved_contexts": [
+        "使用 PatchTST 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)=8。",
+        "使用 PatchTST 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=336，预测长度(pred_len)=720，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)=8。",
+        "使用 PatchTST 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=336，预测长度(pred_len)=192，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)=8。"
+      ],
+      "response": "根据知识库检索结果，**在 ETTh1 数据集上使用 PatchTST 模型、pred_len=96 时的推荐配置**如下：\n\n| 参数名 | 推荐值 |\n|--------|--------|\n| **features (特征模式)** | S (单→单) |\n| **seq_len (输入序列长度)** | 336 |\n| **pred_len (预测长度)** | 96 |\n| **learning_rate (学习率)** | 0.0001 |\n| **batch_size (批大小)** | 128 |\n| **d_model (模型维度)** | 16 |\n| **n_heads (注意力头数)** | 4 |\n| **e_layers (编码器层数)** | 3 |\n| **patch_len (Patch长度)** | 16 |\n| **stride (步幅)** | 8 |\n\n### 📝 说明\n- **features=S** 表示使用单变量到单变量的预测模式（ETTh1 默认是19个变量）\n- **seq_len=336** 对应数据集中的历史时间步数量（通常与 pred_len 保持一定比例）\n- 这些超参已经在该组合下进行了调优验证\n\n---\n如果您需要我帮您执行训练操作，请回复 **\"开始训练\"** 或类似指令，我会为您生成训练配置文件。",
+      "reference": "在 ETTh1 且 pred_len=96 的场景下，应使用 PatchTST，并保持与脚本推荐一致的关键参数，例如 seq_len、label_len、pred_len 以及训练超参数。",
+      "answer_relevancy": 0.9772341666936739,
+      "faithfulness": null,
+      "context_precision": null,
+      "context_recall": 1.0
+    },
+    {
+      "user_input": "在时序预测里，DLinear 和 Transformer 一般哪个更快？",
+      "retrieved_contexts": [
+        "DLinear模型：一个极其简单的线性模型，在某些明显带有周期性和趋势性的单变量或多变量数据集上表现极好，且训练极快。",
+        "使用 DLinear 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.005，批大小(batch_size)=32。",
+        "使用 DLinear 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=48，学习率(learning_rate)=0.005，批大小(batch_size)=32。"
+      ],
+      "response": "在时序预测任务中，**DLinear 通常比 Transformer 更快**（无论是训练速度还是推理速度）。\n\n主要原因如下：\n\n1.  **模型复杂度差异**：\n    *   **DLinear**：根据知识库参考信息 [参考 1]，DLinear 是一个“极其简单的线性模型”，仅包含线性层而无复杂的注意力机制，因此被明确指出“训练极快”。其参数量少，计算负担小。\n    *   **Transformer**：核心组件是自注意力机制（Self-Attention），计算复杂度随序列长度呈近似二次方增长。这不仅增加了训练时的显存占用和时间开销，也使得推理阶段的速度相对较慢。\n\n2.  **实际表现与效率的权衡**：\n    *   参考信息提到，DLinear 在带有明显周期性和趋势性的数据集上“表现极好”。这意味着在许多常规时序场景中，无需使用复杂的 Transformer 架构即可获得不错的效果，从而节省了不必要的计算资源。\n    *   Transformer 虽然理论上具备更强的特征捕捉能力，但为了换取性能提升所付出的时间代价较大。\n\n3.  **应用场景建议**：\n    *   如果追求**快速实验、实时预测或对延迟敏感**的应用，优先选择 **DLinear**（如 ETTh1 数据集上配合推荐的 seq_len=336, pred_len=96 配置即可高效运行）。\n    *   只有在数据非线性极强、依赖关系极其复杂且算力充足的场景下，才考虑牺牲速度以使用 **Transformer** 及其变体（如 Informer, Autoformer 等）。\n\n**结论**：在绝大多数标准时序预测任务中，DLinear 在速度和效率上优于 Transformer。",
+      "reference": "通常 DLinear 在训练和推理速度上都明显快于 Transformer。",
+      "answer_relevancy": 0.9719669806859795,
+      "faithfulness": null,
+      "context_precision": null,
+      "context_recall": 0.0
+    },
+    {
+      "user_input": "在 ETTh1 的多变量设置下，features=M 表示什么？",
+      "retrieved_contexts": [
+        "使用 Autoformer 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=48，编码器层数(e_layers)=2，解码器层数(d_layers)=1。",
+        "使用 Autoformer 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=24，编码器层数(e_layers)=2，解码器层数(d_layers)=1。",
+        "使用 Autoformer 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=336，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+      ],
+      "response": "在 ETTh1 数据集的多变量时间序列预测任务中，**`features = \"M\"`** 表示 **Multi-to-Multi（多输入 → 多输出）** 的特征模式。具体含义如下：\n\n### ✅ `features = \"M\"` 的含义\n| 配置项 | 值 | 说明 |\n|--------|-----|------|\n| `features` | `M` | 多变量建模（Multivariate） |\n| **输入端** | 多个特征变量 | 例如：温度、负载、电压等全部历史数据 |\n| **输出端** | 所有特征变量的未来值 | 需要预测每个变量未来的时间段 |\n\n---\n\n### 🔍 三种特征模式对比\n| 模式 | 类型 | 说明 | 适用场景 |\n|------|------|------|----------|\n| **M** | Multi-to-Multi | 所有变量作为输入，所有变量作为输出 | **常用在多变量协变预测任务** |\n| **MS** | Multi-to-Single | 多个变量作为输入，仅单个目标变量为输出 | 关注某一特定指标时 |\n| **S** | Single-to-Single | 单一变量作为输入，单一变量为输出 | 简单单变量时序预测 |\n\n---\n\n### 📊 以 ETTh1 为例\nETTh1 包含 **7 个能源相关特征列**（如 temperature, load, voltage 等），当设置 `features = M` 时：\n- **输入**：取最近 `seq_len=96` 个时间步的所有 7 个特征\n- **输出**：预测接下来 `pred_len` 个时间步的**所有 7 个特征的未来值**\n\n> ⚠️ 注意：此配置需确保训练数据的每一行都包含完整的 7 个变量，且无缺失值。",
+      "reference": "features=M 表示多变量到多变量预测，即输入是多个变量，输出也预测多个目标变量。",
+      "answer_relevancy": 0.944908248427779,
+      "faithfulness": 0.0,
+      "context_precision": null,
+      "context_recall": 0.0
+    },
+    {
+      "user_input": "时序预测参数里什么时候应该选 MS，而不是 M？",
+      "retrieved_contexts": [
+        "Transformer模型：标准Transformer用于时序预测，适合中等长度序列，配置灵活但计算量较大，速度很慢。",
+        "使用 DLinear 模型对 weather 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=336，批大小(batch_size)=16。",
+        "使用 DLinear 模型对 weather 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=96，批大小(batch_size)=16。"
+      ],
+      "response": "在时序预测任务中，`features` 参数的选择主要取决于你的**目标变量数量**与**输入特征来源**之间的关系。根据系统配置规范及通用实践，两者的区别及适用场景如下：\n\n### 1. 含义定义\n*   **M (Multi → Multi)**：多变量输入预测多变量输出。即利用历史的多维特征数据，同时预测未来同一时间段内的所有相关变量的值。\n*   **MS (Multi → Single)**：多变量输入预测单变量输出。即利用多维的特征数据，仅预测其中某一个特定目标变量的未来值（通常该变量也包含在历史输入中）。\n*   **S (Single → Single)**：单变量输入预测单变量输出。仅使用单一时间序列作为输入和输出。\n\n### 2. 什么时候选择 MS？\n当你满足以下条件时，应优先选择 **MS**：\n*   **关注核心指标**：虽然你有大量采集的传感器数据或辅助特征（如温度、湿度、电压等），但你业务上只关心**某一个特定指标**（例如只预测“功率”而不需要预测其他）的后续趋势。\n*   **多源特征融合**：输入端包含多个不同类别或统计特征的通道（例如 `weather` 数据集中可能有多列），但模型只需输出其中一列作为预测结果。\n*   **节省计算资源**：相比于 M 模式，MS 模式减少了多目标输出的损失计算复杂度，通常在目标明确单一的场景下收敛更快。\n\n### 3. 什么时候选择 M？\n当你满足以下条件时，应优先选择 **M**：\n*   **全量预测需求**：你需要同时获取未来一段时间内**所有监测变量**的数值（例如不仅要预测电量，还要同时预测电压波动和负载情况）。\n*   **变量强关联**：各目标变量之间具有高度的耦合关系，且你希望模型能捕捉到这些变量之间的内部交互信息来进行联合预测。\n*   **参考案例**：如参考知识库中的示例，DLinear 模型在 `weather` 数据集上的默认推荐配置使用了 `features=M`，这通常意味着该数据集的所有列都被视为目标变量，需同时进行预测。\n\n### 总结建议\n*   若你的业务目标是\"**通过多种环境因素精准预测某一项关键指标**\"，请选择 **MS**。\n*   若你的业务目标是\"**掌握整个系统的状态变化，需对所有监测维度进行监控预警**\"，请选择 **M**。",
+      "reference": "当输入使用多变量，但只需要预测单一目标变量时，应选择 MS。",
+      "answer_relevancy": 0.8591472802439416,
+      "faithfulness": null,
+      "context_precision": 0.0,
+      "context_recall": 0.0
+    },
+    {
+      "user_input": "长时序预测配置里最关键的序列参数有哪些？",
+      "retrieved_contexts": [
+        "使用 Informer 模型对 electricity 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=96，编码器层数(e_layers)=2，解码器层数(d_layers)=1。",
+        "使用 Informer 模型对 electricity 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=720，编码器层数(e_layers)=2，解码器层数(d_layers)=1。",
+        "使用 Informer 模型对 electricity 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=192，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+      ],
+      "response": "在长时序预测任务（Long-Term Time Series Forecasting）的配置中，最关键的序列参数主要包括以下四个核心指标。这些参数直接决定了模型输入数据的结构、预测跨度以及计算复杂度：\n\n1.  **输入序列长度 (`seq_len`)**\n    *   **定义**：模型使用的历史时间步数。\n    *   **作用**：提供上下文信息供模型提取趋势和周期性。\n    *   **建议**：通常设置为固定值（如 96），需覆盖足够的周期性（如一天或一周的数据点）。过长会增加计算负担，过短可能导致信息不足。参考库中的配置常设为 `96`。\n\n2.  **预测长度 (`pred_len`)**\n    *   **定义**：需要预测的未来时间步数。\n    *   **作用**：区分“短期”与“长期”预测的关键指标，对模型性能要求最高。\n    *   **建议**：这是长时序任务的核心变量。根据具体场景调整，参考库中展示了 `96`（短期）、`192`（中期）以及 `720`（超长期）等不同配置。随着 `pred_len` 增加，误差通常会累积，可能需要调整模型架构或 Loss 函数。\n\n3.  **标签长度 (`label_len`)**\n    *   **定义**：部分序列到序列模型（如 Informer, Autoformer）用于自回归生成中间状态的标签长度。\n    *   **作用**：帮助解码器更平滑地进行预测，减少直接跳跃带来的不稳定。\n    *   **建议**：通常为 `pred_len` 的一半或更小。参考库中常用 `48` 作为 `pred_len=96` 时的 `label_len`。\n\n4.  **特征模式 (`features`)**\n    *   **定义**：指定单变量还是多变量输入输出。\n    *   **取值**：\n        *   `S`：单变量 -> 单变量（Single feature）。\n        *   `M`：多变量 -> 多变量（Multivariate to Multivariate）。\n        *   `MS`：多变量 -> 单变量（Multivariate to Single）。\n    *   **作用**：决定模型输入张量的维度，影响模型能否利用其他变量的相关性。参考库中对 electricity 数据集采用了 `S` 模式。\n\n### 调优建议\n在进行长时序预测时，建议优先平衡 `seq_len` 和 `pred_len` 的比例。如果显存允许，适当增加 `seq_len` 有助于捕捉更长周期的依赖关系；而大幅拉长 `pred_len` 时，则需注意是否切换到专门的长序列模型（如 PatchTST, DLinear 等可能比 Transformer 类更有效率）。\n\n如果您准备好开始具体的训练或进行推理验证，可以告诉我具体的模型和数据集，我可以为您生成对应的启动配置。",
+      "reference": "关键序列参数包括 seq_len（输入长度）、label_len（解码器已知起始长度）和 pred_len（预测步长/预测区间）。",
+      "answer_relevancy": null,
+      "faithfulness": null,
+      "context_precision": 0.9999999999666667,
+      "context_recall": 0.0
+    }
+  ],
+  "answer_cache_file": "RAG/eval/ragas_answer_cache.json",
+  "answer_history_file": "RAG/eval/ragas_answer_history.jsonl"
+}

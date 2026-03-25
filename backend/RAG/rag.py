@@ -5,6 +5,10 @@ import itertools
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 
+# 优先离线加载本地缓存模型，避免在线 HEAD 请求引发 SSL EOF。
+os.environ.setdefault("HF_HUB_OFFLINE", "1")
+os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
+
 # ── 修复1: 所有路径基于本文件的绝对位置，不受 CWD 影响 ──
 BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS_DIR = os.path.join(BASE_DIR, "..", "model_src", "scripts")
@@ -16,7 +20,7 @@ def parse_sh_scripts_to_texts(scripts_dir: str) -> list[str]:
     """
     遍历 scripts/ 下所有 .sh 文件：
       - 先解析脚本顶部的 shell 变量赋值（如 model_name=DLinear）
-      - 再按每个 `python -u run_longExp.py` 调用块单独提取参数
+            - 再按每个 `python ...xxx.py` 调用块单独提取参数（兼容 run.py / main_informer.py / run_longExp.py）
       - 将 $xxx 替换为实际变量值
       - 每个调用块生成一条独立的自然语言描述
     """
@@ -29,20 +33,21 @@ def parse_sh_scripts_to_texts(scripts_dir: str) -> list[str]:
             with open(os.path.join(root, file), 'r', encoding='utf-8') as f:
                 content = f.read()
 
-            # 解析脚本顶部 shell 变量赋值，如 model_name=DLinear / seq_len=336
+            # step1 解析脚本顶部 shell 变量赋值，如 model_name=DLinear / seq_len=336
             var_map: dict[str, str] = {}
             for m in re.finditer(r'^([A-Za-z_]\w*)=([^\n#]+)', content, re.MULTILINE):
                 var_map[m.group(1)] = m.group(2).strip().strip('"\'')
 
-            # 解析 for 循环变量，如 for pred_len in 96 192 336 720
+            # step2 解析 for 循环变量，如 for pred_len in 96 192 336 720
             for_loops: dict[str, list[str]] = {}
             for m in re.finditer(r'for\s+(\w+)\s+in\s+(.+)', content):
                 var_name = m.group(1)
                 values = m.group(2).strip().split()
                 for_loops[var_name] = values
 
-            # 按 `python -u run_longExp.py` 分割，跳过分割符之前的内容
-            blocks = re.split(r'python\s+-u\s+run_longExp\.py', content)[1:]
+            # step3 按任意 python 脚本调用分块，兼容不同训练入口文件
+            # 例如：python -u run_longExp.py / python -u run.py / python -u main_informer.py
+            blocks = re.split(r'python\s+(?:-u\s+)?[^\s\\]+\.py', content)[1:]
 
             for block in blocks:
                 # 截到输出重定向符（该调用结束处）
@@ -72,8 +77,17 @@ def parse_sh_scripts_to_texts(scripts_dir: str) -> list[str]:
                     else:
                         params[k] = v
 
-                # 必须有 model 和 data_path 才生成描述
-                if 'model' not in params or 'data_path' not in params:
+                # 必须有 model；数据集优先 data_path，其次使用 data
+                if 'model' not in params:
+                    continue
+
+                dataset_name = ''
+                if params.get('data_path'):
+                    dataset_name = params['data_path'].split('/')[-1].split('\\\\')[-1].split('.')[0]
+                elif params.get('data'):
+                    dataset_name = params['data']
+
+                if not dataset_name:
                     continue
 
                 # 构建需要展开的参数组合列表
@@ -86,15 +100,20 @@ def parse_sh_scripts_to_texts(scripts_dir: str) -> list[str]:
                     keys = []
                     combos = [()]  # 无需展开时仍遍历一次
 
+                # step4 展开for循环的每种组合, 生成自然语言描述
                 for combo in combos:
                     expanded = dict(params)
                     for i, k in enumerate(keys):
                         expanded[k] = combo[i]
 
-                    model_name   = expanded['model']
-                    dataset_name = expanded['data_path'].split('.')[0]  # ETTh1.csv → ETTh1
+                    model_name = expanded['model']
+                    current_dataset = dataset_name
+                    if expanded.get('data_path'):
+                        current_dataset = expanded['data_path'].split('/')[-1].split('\\\\')[-1].split('.')[0]
+                    elif expanded.get('data'):
+                        current_dataset = expanded['data']
 
-                    parts = [f"使用 {model_name} 模型对 {dataset_name} 数据集训练时推荐配置"]
+                    parts = [f"使用 {model_name} 模型对 {current_dataset} 数据集训练时推荐配置"]
                     if 'seq_len'       in expanded and expanded['seq_len']:       parts.append(f"输入序列长度(seq_len)={expanded['seq_len']}")
                     if 'pred_len'      in expanded and expanded['pred_len']:      parts.append(f"预测长度(pred_len)={expanded['pred_len']}")
                     if 'label_len'     in expanded and expanded['label_len']:     parts.append(f"标签长度(label_len)={expanded['label_len']}")
@@ -105,6 +124,8 @@ def parse_sh_scripts_to_texts(scripts_dir: str) -> list[str]:
                     if 'e_layers'      in expanded and expanded['e_layers']:      parts.append(f"编码器层数(e_layers)={expanded['e_layers']}")
                     if 'patch_len'     in expanded and expanded['patch_len']:     parts.append(f"Patch长度(patch_len)={expanded['patch_len']}")
                     if 'stride'        in expanded and expanded['stride']:        parts.append(f"步幅(stride)={expanded['stride']}")
+                    if 'patch_size'    in expanded and expanded['patch_size']:    parts.append(f"Patch大小(patch_size)={expanded['patch_size']}")
+                    if 'patch_stride'  in expanded and expanded['patch_stride']:  parts.append(f"Patch步幅(patch_stride)={expanded['patch_stride']}")
 
                     script_texts.append('，'.join(parts) + '。')
 
@@ -121,7 +142,10 @@ def build_index(model_name: str = "BAAI/bge-base-zh-v1.5", log_fn=print) -> Chro
     log_fn(f"[rag] 正在加载嵌入模型: {model_name}")
     embeddings = HuggingFaceEmbeddings(
         model_name=model_name,
-        model_kwargs={'device': 'cuda' if os.getenv("USE_CUDA", "0") == "1" else "cpu"}
+        model_kwargs={
+            'device': 'cuda' if os.getenv("USE_CUDA", "0") == "1" else "cpu",
+            'local_files_only': True,
+        }
     )
     log_fn(f"[rag] 嵌入模型加载完成")
 
@@ -154,7 +178,10 @@ def load_index(model_name: str = "BAAI/bge-base-zh-v1.5") -> Chroma:
     """加载已有向量库（供 FastAPI 在线检索调用，不重新构建）。"""
     embeddings = HuggingFaceEmbeddings(
         model_name=model_name,
-        model_kwargs={'device': 'cuda' if os.getenv("USE_CUDA", "0") == "1" else "cpu"}
+        model_kwargs={
+            'device': 'cuda' if os.getenv("USE_CUDA", "0") == "1" else "cpu",
+            'local_files_only': True,
+        }
     )
     return Chroma(persist_directory=PERSIST_DIR, embedding_function=embeddings)
 

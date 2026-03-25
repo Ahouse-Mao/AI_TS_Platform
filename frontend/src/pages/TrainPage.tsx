@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import type { TrainingStatus, TrainConfig } from '../types'
 import { API_BASE } from '../config'
+import { ssGet, ssSet } from '../utils/storage'
 
 // TrainPage 内部不再独立发起网络请求，仅保留 API_BASE 供内部自局部备用️
 
@@ -124,6 +125,28 @@ export function TrainPage({ trainingStatus, isLoading, onStartTraining, trainLog
     if (currentFamily === 'patchtst')    setPatchTSTParams({ ...DEFAULT_PATCHTST })
     if (currentFamily === 'linear')      setLinearParams({ ...DEFAULT_LINEAR })
   }
+
+  // 挂载时检测 AI 助手注入的待填配置
+  useEffect(() => {
+    const cfg = ssGet<Record<string, unknown> | null>('pending_train_config', null)
+    if (!cfg) return
+    ssSet('pending_train_config', null)  // 消费后清除，避免重复触发
+    if (typeof cfg.model === 'string') setSelectedModel(cfg.model)
+    setBasicParams(prev => ({
+      ...prev,
+      ...(typeof cfg.data          === 'string'  ? { data:          cfg.data as string          } : {}),
+      ...(typeof cfg.data_path     === 'string'  ? { data_path:     cfg.data_path as string     } : {}),
+      ...(typeof cfg.features      === 'string'  ? { features:      cfg.features as 'M'|'MS'|'S'} : {}),
+      ...(typeof cfg.seq_len       === 'number'  ? { seq_len:       cfg.seq_len                 } : {}),
+      ...(typeof cfg.label_len     === 'number'  ? { label_len:     cfg.label_len               } : {}),
+      ...(typeof cfg.pred_len      === 'number'  ? { pred_len:      cfg.pred_len                } : {}),
+      ...(typeof cfg.train_epochs  === 'number'  ? { train_epochs:  cfg.train_epochs            } : {}),
+      ...(typeof cfg.patience      === 'number'  ? { patience:      cfg.patience                } : {}),
+      ...(typeof cfg.batch_size    === 'number'  ? { batch_size:    cfg.batch_size              } : {}),
+      ...(typeof cfg.learning_rate === 'number'  ? { learning_rate: cfg.learning_rate           } : {}),
+      ...(typeof cfg.use_gpu       === 'boolean' ? { use_gpu:       cfg.use_gpu                 } : {}),
+    }))
+  }, []) // 仅在挂载时执行一次
 
   // 模型切换时：重置脚本选择并重新拉取脚本列表
   useEffect(() => {

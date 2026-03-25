@@ -42,6 +42,7 @@ function App() {
 
   // ── 训练日志提升到 App，路由切换不丢失 ──
   const [trainLogs,  setTrainLogs]  = useState<string[]>([])
+  // 轮询器引用, 要么是 setInterval 返回的定时器ID, 要么是 null
   const logPollRef                  = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // ── Checkpoint 列表提升到 App（仅首次加载，切换路由不重复请求） ──
@@ -50,11 +51,11 @@ function App() {
   const [checkpointsError,   setCheckpointsError]   = useState<string | null>(null)
 
   useEffect(() => {
-    axios.get(`${API_BASE}/api/predict/checkpoints`)
-      .then(res  => setCheckpoints(res.data))
+    axios.get(`${API_BASE}/api/predict/checkpoints`) // 返回promise格式对象
+      .then(res  => setCheckpoints(res.data)) // 箭头函数, 传入res参数, 调用setCheckpoints更新状态为res.data
       .catch(err => setCheckpointsError('获取 Checkpoint 列表失败：' + err.message))
       .finally(() => setCheckpointsLoading(false))
-  }, [])  // 空依赖 → 只在 App 首次挂载时执行一次
+  }, [])  // 空依赖 → 只在 App 首次挂载时执行一次, 实现简洁的生命周期控制
 
   // 主动刷新 Checkpoint 列表
   const refreshCheckpoints = () => {
@@ -68,26 +69,29 @@ function App() {
 
   // 轮询状态 + 日志，两者合并为一个 interval
   const startPollingStatus = () => {
-    if (logPollRef.current) clearInterval(logPollRef.current)
-    let logOffset = 0
-    logPollRef.current = setInterval(async () => {
+    if (logPollRef.current) clearInterval(logPollRef.current) // 清除之前的轮询器（如果存在），避免重复
+    let logOffset = 0 // 日志偏移量，记录已经获取了多少行日志
+    logPollRef.current = setInterval(async () => { // setInterval 设置一个定时器, 返回一个ID, 赋值给logPollRef.current
       try {
-        const [statusRes, logRes] = await Promise.all([
+        const [statusRes, logRes] = await Promise.all([ // Promise.all 等待多个异步操作完成, 传入一个数组, 发起多个请求, 返回一个包含所有结果的数组
           axios.get(`${API_BASE}/api/train/status`),
           axios.get(`${API_BASE}/api/train/logs?since=${logOffset}`),
         ])
-        setTrainingStatus(statusRes.data)
-        const { lines, total } = logRes.data as { lines: string[]; total: number }
+        setTrainingStatus(statusRes.data) // 更新训练状态为 statusRes.data
+        // 后端数据格式: { lines: string[]; total: number }, 解构赋值获取 lines 和 total
+        const { lines, total } = logRes.data as { lines: string[]; total: number } 
         if (lines.length > 0) {
-          setTrainLogs(prev => [...prev, ...lines])
-          logOffset = total
+          // 追加日志，而不是替换现有日志，prev 是之前的日志数组, ...lines 是新获取的日志数组, 合并成一个新的数组
+          setTrainLogs(prev => [...prev, ...lines]) 
+          logOffset = total // 更新日志偏移量为 total, 下一次请求时告诉后端只返回新日志
         }
+        // 定时器清除逻辑, 如果状态变为 completed 或 failed, 则清除定时器, 停止轮询
         if (statusRes.data.status === 'completed' || statusRes.data.status === 'failed') {
           clearInterval(logPollRef.current!)
           logPollRef.current = null
         }
       } catch { /* 网络抖动静默跳过 */ }
-    }, 1500)
+    }, 1500) // 设置定时器，每1.5秒执行一次轮询函数
   }
 
   // 启动训练函数

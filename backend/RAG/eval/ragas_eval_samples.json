@@ -1,0 +1,22 @@
+[
+  {
+    "question": "在 ETTh1 数据集上做 pred_len=96 的预测，PatchTST 推荐配置是什么？",
+    "ground_truth": "在 ETTh1 且 pred_len=96 的场景下，应使用 PatchTST，并保持与脚本推荐一致的关键参数，例如 seq_len、label_len、pred_len 以及训练超参数。"
+  },
+  {
+    "question": "在时序预测里，DLinear 和 Transformer 一般哪个更快？",
+    "ground_truth": "通常 DLinear 在训练和推理速度上都明显快于 Transformer。"
+  },
+  {
+    "question": "在 ETTh1 的多变量设置下，features=M 表示什么？",
+    "ground_truth": "features=M 表示多变量到多变量预测，即输入是多个变量，输出也预测多个目标变量。"
+  },
+  {
+    "question": "时序预测参数里什么时候应该选 MS，而不是 M？",
+    "ground_truth": "当输入使用多变量，但只需要预测单一目标变量时，应选择 MS。"
+  },
+  {
+    "question": "长时序预测配置里最关键的序列参数有哪些？",
+    "ground_truth": "关键序列参数包括 seq_len（输入长度）、label_len（解码器已知起始长度）和 pred_len（预测步长/预测区间）。"
+  }
+]

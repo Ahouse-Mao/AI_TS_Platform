@@ -1,0 +1,2471 @@
+{
+  "samples_file": "RAG/eval/rag_eval_samples_25.json",
+  "embedding_model": "BAAI/bge-base-zh-v1.5",
+  "mode": "both",
+  "k_override": 2,
+  "summary": {
+    "classic": {
+      "samples": 25,
+      "macro_precision_at_k": 0.58,
+      "macro_recall_at_k": 0.74,
+      "macro_precision_at_1": 0.8,
+      "macro_hit_at_1": 0.8,
+      "macro_mrr": 0.8
+    },
+    "struct": {
+      "samples": 25,
+      "macro_precision_at_k": 0.6,
+      "macro_recall_at_k": 0.92,
+      "macro_precision_at_1": 0.92,
+      "macro_hit_at_1": 0.92,
+      "macro_mrr": 0.94
+    }
+  },
+  "details": {
+    "classic": [
+      {
+        "id": "S01",
+        "mode": "classic",
+        "query": "PatchTST 在 ETTh1 数据集上，pred_len=96 时推荐配置是什么？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "PatchTST",
+            "dataset": "ETTh1",
+            "pred_len": "96",
+            "seq_len": "336"
+          }
+        ],
+        "precision_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "PatchTST",
+              "dataset": "ETTh1",
+              "pred_len": "96",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)=8。"
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "model": "PatchTST",
+              "dataset": "ETTh1",
+              "pred_len": "96",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)=8。"
+          }
+        ]
+      },
+      {
+        "id": "S02",
+        "mode": "classic",
+        "query": "PatchTST 对 ETTh1 的 192 步预测参数有哪些？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "PatchTST",
+            "dataset": "ETTh1",
+            "pred_len": "192",
+            "seq_len": "336"
+          }
+        ],
+        "precision_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "PatchTST",
+              "dataset": "ETTh1",
+              "pred_len": "192",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=192，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)=8。"
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "model": "PatchTST",
+              "dataset": "ETTh1",
+              "pred_len": "192",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=192，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)=8。"
+          }
+        ]
+      },
+      {
+        "id": "S03",
+        "mode": "classic",
+        "query": "PatchTST 在 ETTh2 上做 336 预测时的配置建议",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "PatchTST",
+            "dataset": "ETTh2",
+            "pred_len": "336"
+          }
+        ],
+        "precision_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "PatchTST",
+              "dataset": "ETTh2",
+              "pred_len": "336",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh2 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=336，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)=8。"
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "model": "PatchTST",
+              "dataset": "ETTh2",
+              "pred_len": "336",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh2 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=336，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)=8。"
+          }
+        ]
+      },
+      {
+        "id": "S04",
+        "mode": "classic",
+        "query": "PatchTST 在 ETTm1 上 pred_len=720 的推荐参数",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "PatchTST",
+            "dataset": "ETTm1",
+            "pred_len": "720"
+          }
+        ],
+        "precision_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "PatchTST",
+              "dataset": "ETTm1",
+              "pred_len": "720",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTm1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=720，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=128，注意力头数(n_heads)=16，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)=8。"
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "model": "PatchTST",
+              "dataset": "ETTm1",
+              "pred_len": "720",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTm1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=720，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=128，注意力头数(n_heads)=16，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)=8。"
+          }
+        ]
+      },
+      {
+        "id": "S05",
+        "mode": "classic",
+        "query": "DLinear 在 ETTh1 数据集上 96 预测的训练配置",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "DLinear",
+            "dataset": "ETTh1",
+            "pred_len": "96"
+          }
+        ],
+        "precision_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "DLinear",
+              "dataset": "ETTh1",
+              "pred_len": "96",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.005，批大小(batch_size)=32。"
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "model": "DLinear",
+              "dataset": "ETTh1",
+              "pred_len": "96",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.005，批大小(batch_size)=32。"
+          }
+        ]
+      },
+      {
+        "id": "S06",
+        "mode": "classic",
+        "query": "DLinear ETTh1 的 720 步预测建议参数是什么？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "DLinear",
+            "dataset": "ETTh1",
+            "pred_len": "720"
+          }
+        ],
+        "precision_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "DLinear",
+              "dataset": "ETTh1",
+              "pred_len": "720",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=720，学习率(learning_rate)=0.005，批大小(batch_size)=32。"
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "model": "DLinear",
+              "dataset": "ETTh1",
+              "pred_len": "720",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=720，学习率(learning_rate)=0.005，批大小(batch_size)=32。"
+          }
+        ]
+      },
+      {
+        "id": "S07",
+        "mode": "classic",
+        "query": "DLinear 在 ETTh2 上做 192 预测的参数推荐",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "DLinear",
+            "dataset": "ETTh2",
+            "pred_len": "192"
+          }
+        ],
+        "precision_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "DLinear",
+              "dataset": "ETTh2",
+              "pred_len": "192",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh2 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=192，学习率(learning_rate)=0.005，批大小(batch_size)=32。"
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "model": "DLinear",
+              "dataset": "ETTh2",
+              "pred_len": "192",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh2 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=192，学习率(learning_rate)=0.05，批大小(batch_size)=32。"
+          }
+        ]
+      },
+      {
+        "id": "S08",
+        "mode": "classic",
+        "query": "DLinear 在 exchange_rate 数据集上 pred_len=336 怎么配？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "DLinear",
+            "dataset": "exchange_rate",
+            "pred_len": "336"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "DLinear",
+              "dataset": "exchange_rate",
+              "pred_len": "336",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 DLinear 模型对 exchange_rate 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=336，学习率(learning_rate)=0.0005，批大小(batch_size)=32。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "DLinear",
+              "dataset": "exchange_rate",
+              "pred_len": "96",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 DLinear 模型对 exchange_rate 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.0005，批大小(batch_size)=8。"
+          }
+        ]
+      },
+      {
+        "id": "S09",
+        "mode": "classic",
+        "query": "DLinear 在 traffic 数据集做 96 预测的配置",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "DLinear",
+            "dataset": "traffic",
+            "pred_len": "96"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "DLinear",
+              "dataset": "traffic",
+              "pred_len": "96",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 DLinear 模型对 traffic 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.05，批大小(batch_size)=16。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "DLinear",
+              "dataset": "traffic",
+              "pred_len": "336",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 DLinear 模型对 traffic 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=336，学习率(learning_rate)=0.05，批大小(batch_size)=16。"
+          }
+        ]
+      },
+      {
+        "id": "S10",
+        "mode": "classic",
+        "query": "Autoformer 在 ETTh1 上 pred_len=24 时的推荐参数",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "Autoformer",
+            "dataset": "ETTh1",
+            "pred_len": "24"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "Autoformer",
+              "dataset": "ETTh1",
+              "pred_len": "24",
+              "seq_len": "96",
+              "label_len": "48"
+            },
+            "text_preview": "使用 Autoformer 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=96，预测长度(pred_len)=24，标签长度(label_len)=48，编码器层数(e_layers)=2。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "Autoformer",
+              "dataset": "ETTh1",
+              "pred_len": "48",
+              "seq_len": "96",
+              "label_len": "48"
+            },
+            "text_preview": "使用 Autoformer 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=96，预测长度(pred_len)=48，标签长度(label_len)=48，编码器层数(e_layers)=2。"
+          }
+        ]
+      },
+      {
+        "id": "S11",
+        "mode": "classic",
+        "query": "Autoformer ETTh1 的 168 预测配置",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "Autoformer",
+            "dataset": "ETTh1",
+            "pred_len": "168"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "Autoformer",
+              "dataset": "ETTh1",
+              "pred_len": "168",
+              "seq_len": "96",
+              "label_len": "48"
+            },
+            "text_preview": "使用 Autoformer 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=96，预测长度(pred_len)=168，标签长度(label_len)=48，编码器层数(e_layers)=2。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "Autoformer",
+              "dataset": "ETTh1",
+              "pred_len": "720",
+              "seq_len": "96",
+              "label_len": "48"
+            },
+            "text_preview": "使用 Autoformer 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=96，预测长度(pred_len)=720，标签长度(label_len)=48，编码器层数(e_layers)=2。"
+          }
+        ]
+      },
+      {
+        "id": "S12",
+        "mode": "classic",
+        "query": "Autoformer 在 ETTh2 上 pred_len=336 应该如何设置？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "Autoformer",
+            "dataset": "ETTh2",
+            "pred_len": "336"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "Autoformer",
+              "dataset": "ETTh2",
+              "pred_len": "336",
+              "seq_len": "96",
+              "label_len": "48"
+            },
+            "text_preview": "使用 Autoformer 模型对 ETTh2 数据集训练时推荐配置，输入序列长度(seq_len)=96，预测长度(pred_len)=336，标签长度(label_len)=48，编码器层数(e_layers)=2。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "Autoformer",
+              "dataset": "ETTh2",
+              "pred_len": "168",
+              "seq_len": "96",
+              "label_len": "48"
+            },
+            "text_preview": "使用 Autoformer 模型对 ETTh2 数据集训练时推荐配置，输入序列长度(seq_len)=96，预测长度(pred_len)=168，标签长度(label_len)=48，编码器层数(e_layers)=2。"
+          }
+        ]
+      },
+      {
+        "id": "S13",
+        "mode": "classic",
+        "query": "Informer 在 ETTh2 数据集上，M 特征、pred_len=48 的配置",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "informer",
+            "dataset": "ETTh2",
+            "pred_len": "48",
+            "features": "M"
+          },
+          {
+            "model": "Informer",
+            "dataset": "ETTh2",
+            "pred_len": "48",
+            "features": "M"
+          }
+        ],
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "precision_at_1": 0.0,
+        "hit_at_1": 0.0,
+        "reciprocal_rank": 0.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": false,
+            "attrs": {
+              "model": "informer",
+              "dataset": "ETTh2",
+              "pred_len": "24",
+              "seq_len": "48",
+              "label_len": "48"
+            },
+            "text_preview": "使用 informer 模型对 ETTh2 数据集训练时推荐配置，输入序列长度(seq_len)=48，预测长度(pred_len)=24，标签长度(label_len)=48，编码器层数(e_layers)=2。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "informer",
+              "dataset": "ETTh2",
+              "pred_len": "24",
+              "seq_len": "48",
+              "label_len": "48"
+            },
+            "text_preview": "使用 informer 模型对 ETTh2 数据集训练时推荐配置，输入序列长度(seq_len)=48，预测长度(pred_len)=24，标签长度(label_len)=48，编码器层数(e_layers)=2。"
+          }
+        ]
+      },
+      {
+        "id": "S14",
+        "mode": "classic",
+        "query": "Informer 在 ETTh1 上 S 模式、720 预测的参数推荐",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "informer",
+            "dataset": "ETTh1",
+            "pred_len": "720",
+            "features": "S"
+          },
+          {
+            "model": "Informer",
+            "dataset": "ETTh1",
+            "pred_len": "720",
+            "features": "S"
+          }
+        ],
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "precision_at_1": 0.0,
+        "hit_at_1": 0.0,
+        "reciprocal_rank": 0.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": false,
+            "attrs": {
+              "model": "informer",
+              "dataset": "ETTh1",
+              "pred_len": "720",
+              "seq_len": "720",
+              "label_len": "336"
+            },
+            "text_preview": "使用 informer 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=720，预测长度(pred_len)=720，标签长度(label_len)=336，编码器层数(e_layers)=2。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "informer",
+              "dataset": "ETTh1",
+              "pred_len": "336",
+              "seq_len": "720",
+              "label_len": "336"
+            },
+            "text_preview": "使用 informer 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=720，预测长度(pred_len)=336，标签长度(label_len)=336，编码器层数(e_layers)=2。"
+          }
+        ]
+      },
+      {
+        "id": "S15",
+        "mode": "classic",
+        "query": "Informer 在 WTH 数据集上 336 预测如何配置？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "informer",
+            "dataset": "WTH",
+            "pred_len": "336"
+          },
+          {
+            "model": "Informer",
+            "dataset": "WTH",
+            "pred_len": "336"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "informer",
+              "dataset": "WTH",
+              "pred_len": "336",
+              "seq_len": "336",
+              "label_len": "336"
+            },
+            "text_preview": "使用 informer 模型对 WTH 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=336，标签长度(label_len)=336，编码器层数(e_layers)=3。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "informer",
+              "dataset": "WTH",
+              "pred_len": "168",
+              "seq_len": "336",
+              "label_len": "168"
+            },
+            "text_preview": "使用 informer 模型对 WTH 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=168，标签长度(label_len)=168，编码器层数(e_layers)=3。"
+          }
+        ]
+      },
+      {
+        "id": "S16",
+        "mode": "classic",
+        "query": "Transformer 在 ETTh1 上 pred_len=48 的推荐设置",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "Transformer",
+            "dataset": "ETTh1",
+            "pred_len": "48"
+          }
+        ],
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "precision_at_1": 0.0,
+        "hit_at_1": 0.0,
+        "reciprocal_rank": 0.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": false,
+            "attrs": {
+              "model": "Transformer",
+              "dataset": "ETTm1",
+              "pred_len": "96",
+              "seq_len": "96",
+              "label_len": "48"
+            },
+            "text_preview": "使用 Transformer 模型对 ETTm1 数据集训练时推荐配置，输入序列长度(seq_len)=96，预测长度(pred_len)=96，标签长度(label_len)=48，编码器层数(e_layers)=2。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "Transformer",
+              "dataset": "ETTm1",
+              "pred_len": "192",
+              "seq_len": "96",
+              "label_len": "48"
+            },
+            "text_preview": "使用 Transformer 模型对 ETTm1 数据集训练时推荐配置，输入序列长度(seq_len)=96，预测长度(pred_len)=192，标签长度(label_len)=48，编码器层数(e_layers)=2。"
+          }
+        ]
+      },
+      {
+        "id": "S17",
+        "mode": "classic",
+        "query": "Transformer 在 weather 数据集上做 720 预测的参数",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "Transformer",
+            "dataset": "weather",
+            "pred_len": "720"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "Transformer",
+              "dataset": "weather",
+              "pred_len": "720",
+              "seq_len": "96",
+              "label_len": "48"
+            },
+            "text_preview": "使用 Transformer 模型对 weather 数据集训练时推荐配置，输入序列长度(seq_len)=96，预测长度(pred_len)=720，标签长度(label_len)=48，编码器层数(e_layers)=2。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "Transformer",
+              "dataset": "weather",
+              "pred_len": "192",
+              "seq_len": "96",
+              "label_len": "48"
+            },
+            "text_preview": "使用 Transformer 模型对 weather 数据集训练时推荐配置，输入序列长度(seq_len)=96，预测长度(pred_len)=192，标签长度(label_len)=48，编码器层数(e_layers)=2。"
+          }
+        ]
+      },
+      {
+        "id": "S18",
+        "mode": "classic",
+        "query": "ModernTCN 在 ETTh1 上 pred_len=336 的配置建议",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "ModernTCN",
+            "dataset": "ETTh1",
+            "pred_len": "336"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "ModernTCN",
+              "dataset": "ETTh1",
+              "pred_len": "336",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 ModernTCN 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=336，学习率(learning_rate)=0.0001，批大小(batch_size)=512，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "ModernTCN",
+              "dataset": "ETTh1",
+              "pred_len": "96",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 ModernTCN 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.0001，批大小(batch_size)=512，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          }
+        ]
+      },
+      {
+        "id": "S19",
+        "mode": "classic",
+        "query": "ModernTCN 在 ETTh2 上 192 步预测怎么设置？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "ModernTCN",
+            "dataset": "ETTh2",
+            "pred_len": "192"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "ModernTCN",
+              "dataset": "ETTh2",
+              "pred_len": "192",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 ModernTCN 模型对 ETTh2 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=192，学习率(learning_rate)=0.0001，批大小(batch_size)=512，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "ModernTCN",
+              "dataset": "ETTm2",
+              "pred_len": "96",
+              "seq_len": "192"
+            },
+            "text_preview": "使用 ModernTCN 模型对 ETTm2 数据集训练时推荐配置，输入序列长度(seq_len)=192，预测长度(pred_len)=96，学习率(learning_rate)=0.0001，批大小(batch_size)=512，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          }
+        ]
+      },
+      {
+        "id": "S20",
+        "mode": "classic",
+        "query": "ModernTCN 在 ETTm2 上 pred_len=720 的训练参数",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "ModernTCN",
+            "dataset": "ETTm2",
+            "pred_len": "720"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "ModernTCN",
+              "dataset": "ETTm2",
+              "pred_len": "720",
+              "seq_len": "960"
+            },
+            "text_preview": "使用 ModernTCN 模型对 ETTm2 数据集训练时推荐配置，输入序列长度(seq_len)=960，预测长度(pred_len)=720，学习率(learning_rate)=0.0001，批大小(batch_size)=512，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "ModernTCN",
+              "dataset": "ETTm2",
+              "pred_len": "96",
+              "seq_len": "192"
+            },
+            "text_preview": "使用 ModernTCN 模型对 ETTm2 数据集训练时推荐配置，输入序列长度(seq_len)=192，预测长度(pred_len)=96，学习率(learning_rate)=0.0001，批大小(batch_size)=512，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          }
+        ]
+      },
+      {
+        "id": "S21",
+        "mode": "classic",
+        "query": "ModernTCN 在 electricity 上 96 预测的推荐配置",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "ModernTCN",
+            "dataset": "electricity",
+            "pred_len": "96"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "ModernTCN",
+              "dataset": "electricity",
+              "pred_len": "96",
+              "seq_len": "720"
+            },
+            "text_preview": "使用 ModernTCN 模型对 electricity 数据集训练时推荐配置，输入序列长度(seq_len)=720，预测长度(pred_len)=96，学习率(learning_rate)=0.0001，批大小(batch_size)=32，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "ModernTCN",
+              "dataset": "electricity",
+              "pred_len": "336",
+              "seq_len": "720"
+            },
+            "text_preview": "使用 ModernTCN 模型对 electricity 数据集训练时推荐配置，输入序列长度(seq_len)=720，预测长度(pred_len)=336，学习率(learning_rate)=0.0001，批大小(batch_size)=32，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          }
+        ]
+      },
+      {
+        "id": "S22",
+        "mode": "classic",
+        "query": "PatchTST 在 ETTh1 常见的预测长度有哪些？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "PatchTST",
+            "dataset": "ETTh1",
+            "pred_len": "96"
+          },
+          {
+            "model": "PatchTST",
+            "dataset": "ETTh1",
+            "pred_len": "192"
+          },
+          {
+            "model": "PatchTST",
+            "dataset": "ETTh1",
+            "pred_len": "336"
+          },
+          {
+            "model": "PatchTST",
+            "dataset": "ETTh1",
+            "pred_len": "720"
+          }
+        ],
+        "precision_at_k": 1.0,
+        "recall_at_k": 0.25,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "PatchTST",
+              "dataset": "ETTh1",
+              "pred_len": "96",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)=8。"
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "model": "PatchTST",
+              "dataset": "ETTh1",
+              "pred_len": "96",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)=8。"
+          }
+        ]
+      },
+      {
+        "id": "S23",
+        "mode": "classic",
+        "query": "DLinear 在 ETTh2 常用 pred_len 选项有哪些？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "DLinear",
+            "dataset": "ETTh2",
+            "pred_len": "96"
+          },
+          {
+            "model": "DLinear",
+            "dataset": "ETTh2",
+            "pred_len": "192"
+          },
+          {
+            "model": "DLinear",
+            "dataset": "ETTh2",
+            "pred_len": "336"
+          },
+          {
+            "model": "DLinear",
+            "dataset": "ETTh2",
+            "pred_len": "720"
+          }
+        ],
+        "precision_at_k": 1.0,
+        "recall_at_k": 0.25,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "DLinear",
+              "dataset": "ETTh2",
+              "pred_len": "96",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh2 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.005，批大小(batch_size)=32。"
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "model": "DLinear",
+              "dataset": "ETTh2",
+              "pred_len": "96",
+              "seq_len": "336"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh2 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.05，批大小(batch_size)=32。"
+          }
+        ]
+      },
+      {
+        "id": "S24",
+        "mode": "classic",
+        "query": "NLinear 模型有什么特点，适合什么场景？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "NLinear",
+            "source_type": "manual"
+          }
+        ],
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "precision_at_1": 0.0,
+        "hit_at_1": 0.0,
+        "reciprocal_rank": 0.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": false,
+            "attrs": {},
+            "text_preview": "NLinear模型：在DLinear基础上加入了减去最后一个时间步的归一化技巧，在分布偏移场景下效果更好，速度快。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {},
+            "text_preview": "DLinear模型：一个极其简单的线性模型，在某些明显带有周期性和趋势性的单变量或多变量数据集上表现极好，且训练极快。"
+          }
+        ]
+      },
+      {
+        "id": "S25",
+        "mode": "classic",
+        "query": "Informer 模型的核心特点是什么？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "Informer",
+            "source_type": "manual"
+          }
+        ],
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "precision_at_1": 0.0,
+        "hit_at_1": 0.0,
+        "reciprocal_rank": 0.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": false,
+            "attrs": {},
+            "text_preview": "Informer模型：使用ProbSparse稀疏注意力机制，适合超长序列预测，降低了Transformer的平方复杂度，但是速度较慢。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "informer",
+              "dataset": "WTH",
+              "pred_len": "336",
+              "seq_len": "336",
+              "label_len": "336"
+            },
+            "text_preview": "使用 informer 模型对 WTH 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=336，标签长度(label_len)=336，编码器层数(e_layers)=3。"
+          }
+        ]
+      }
+    ],
+    "struct": [
+      {
+        "id": "S01",
+        "mode": "struct",
+        "query": "PatchTST 在 ETTh1 数据集上，pred_len=96 时推荐配置是什么？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "PatchTST",
+            "dataset": "ETTh1",
+            "pred_len": "96",
+            "seq_len": "336"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "entry_py": "run_longExp.py",
+              "features": "S",
+              "source_type": "script",
+              "pred_len": "96",
+              "script_name": "etth1.sh",
+              "dataset": "ETTh1",
+              "script_path": "PatchTST/univariate/etth1.sh",
+              "seq_len": "336",
+              "model": "PatchTST"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)=8"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "source_type": "script",
+              "pred_len": "192",
+              "seq_len": "336",
+              "model": "PatchTST",
+              "entry_py": "run_longExp.py",
+              "features": "S",
+              "dataset": "ETTh1",
+              "script_path": "PatchTST/univariate/etth1.sh",
+              "script_name": "etth1.sh"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=336，预测长度(pred_len)=192，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)="
+          }
+        ]
+      },
+      {
+        "id": "S02",
+        "mode": "struct",
+        "query": "PatchTST 对 ETTh1 的 192 步预测参数有哪些？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "PatchTST",
+            "dataset": "ETTh1",
+            "pred_len": "192",
+            "seq_len": "336"
+          }
+        ],
+        "precision_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "source_type": "script",
+              "features": "S",
+              "script_name": "etth1.sh",
+              "seq_len": "336",
+              "model": "PatchTST",
+              "script_path": "PatchTST/univariate/etth1.sh",
+              "pred_len": "192",
+              "dataset": "ETTh1",
+              "entry_py": "run_longExp.py"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=336，预测长度(pred_len)=192，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)="
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "pred_len": "192",
+              "model": "PatchTST",
+              "dataset": "ETTh1",
+              "seq_len": "336",
+              "script_path": "PatchTST/etth1.sh",
+              "features": "M",
+              "entry_py": "run_longExp.py",
+              "source_type": "script",
+              "script_name": "etth1.sh"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=192，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)="
+          }
+        ]
+      },
+      {
+        "id": "S03",
+        "mode": "struct",
+        "query": "PatchTST 在 ETTh2 上做 336 预测时的配置建议",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "PatchTST",
+            "dataset": "ETTh2",
+            "pred_len": "336"
+          }
+        ],
+        "precision_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "seq_len": "336",
+              "dataset": "ETTh2",
+              "entry_py": "run_longExp.py",
+              "model": "PatchTST",
+              "script_name": "etth2.sh",
+              "source_type": "script",
+              "script_path": "PatchTST/univariate/etth2.sh",
+              "features": "S",
+              "pred_len": "336"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh2 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=336，预测长度(pred_len)=336，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)="
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "script_path": "PatchTST/etth2.sh",
+              "dataset": "ETTh2",
+              "entry_py": "run_longExp.py",
+              "pred_len": "336",
+              "source_type": "script",
+              "features": "M",
+              "seq_len": "336",
+              "model": "PatchTST",
+              "script_name": "etth2.sh"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh2 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=336，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)="
+          }
+        ]
+      },
+      {
+        "id": "S04",
+        "mode": "struct",
+        "query": "PatchTST 在 ETTm1 上 pred_len=720 的推荐参数",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "PatchTST",
+            "dataset": "ETTm1",
+            "pred_len": "720"
+          }
+        ],
+        "precision_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "pred_len": "720",
+              "script_name": "ettm1.sh",
+              "seq_len": "336",
+              "dataset": "ETTm1",
+              "source_type": "script",
+              "features": "M",
+              "script_path": "PatchTST/ettm1.sh",
+              "model": "PatchTST",
+              "entry_py": "run_longExp.py"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTm1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=720，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=128，注意力头数(n_heads)=16，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride"
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "model": "PatchTST",
+              "entry_py": "run_longExp.py",
+              "pred_len": "720",
+              "seq_len": "336",
+              "features": "S",
+              "dataset": "ETTm1",
+              "script_path": "PatchTST/univariate/ettm1.sh",
+              "source_type": "script",
+              "script_name": "ettm1.sh"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTm1 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=336，预测长度(pred_len)=720，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=128，注意力头数(n_heads)=16，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride"
+          }
+        ]
+      },
+      {
+        "id": "S05",
+        "mode": "struct",
+        "query": "DLinear 在 ETTh1 数据集上 96 预测的训练配置",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "DLinear",
+            "dataset": "ETTh1",
+            "pred_len": "96"
+          }
+        ],
+        "precision_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "script_name": "etth1.sh",
+              "model": "DLinear",
+              "dataset": "ETTh1",
+              "entry_py": "run_longExp.py",
+              "source_type": "script",
+              "seq_len": "336",
+              "pred_len": "96",
+              "script_path": "Linear/univariate/etth1.sh"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.005，批大小(batch_size)=32。"
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "dataset": "ETTh1",
+              "features": "M",
+              "source_type": "script",
+              "script_path": "Linear/etth1.sh",
+              "script_name": "etth1.sh",
+              "model": "DLinear",
+              "seq_len": "336",
+              "pred_len": "96",
+              "entry_py": "run_longExp.py"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.005，批大小(batch_size)=32。"
+          }
+        ]
+      },
+      {
+        "id": "S06",
+        "mode": "struct",
+        "query": "DLinear ETTh1 的 720 步预测建议参数是什么？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "DLinear",
+            "dataset": "ETTh1",
+            "pred_len": "720"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "pred_len": "720",
+              "seq_len": "336",
+              "dataset": "ETTh1",
+              "model": "DLinear",
+              "source_type": "script",
+              "script_path": "Linear/univariate/etth1.sh",
+              "script_name": "etth1.sh",
+              "entry_py": "run_longExp.py"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=720，学习率(learning_rate)=0.005，批大小(batch_size)=32。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "dataset": "ETTh1",
+              "pred_len": "192",
+              "seq_len": "336",
+              "model": "DLinear",
+              "entry_py": "run_longExp.py",
+              "script_name": "etth1.sh",
+              "script_path": "Linear/univariate/etth1.sh",
+              "source_type": "script"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh1 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=192，学习率(learning_rate)=0.005，批大小(batch_size)=32。"
+          }
+        ]
+      },
+      {
+        "id": "S07",
+        "mode": "struct",
+        "query": "DLinear 在 ETTh2 上做 192 预测的参数推荐",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "DLinear",
+            "dataset": "ETTh2",
+            "pred_len": "192"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "source_type": "script",
+              "entry_py": "run_longExp.py",
+              "dataset": "ETTh2",
+              "seq_len": "336",
+              "pred_len": "192",
+              "model": "DLinear",
+              "script_path": "Linear/univariate/etth2.sh",
+              "script_name": "etth2.sh"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh2 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=192，学习率(learning_rate)=0.005，批大小(batch_size)=32。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "dataset": "ETTh2",
+              "seq_len": "336",
+              "script_path": "Linear/univariate/etth2.sh",
+              "pred_len": "24",
+              "script_name": "etth2.sh",
+              "entry_py": "run_longExp.py",
+              "model": "DLinear",
+              "source_type": "script"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh2 数据集训练时推荐配置，输入序列长度(seq_len)=336，预测长度(pred_len)=24，学习率(learning_rate)=0.005，批大小(batch_size)=32。"
+          }
+        ]
+      },
+      {
+        "id": "S08",
+        "mode": "struct",
+        "query": "DLinear 在 exchange_rate 数据集上 pred_len=336 怎么配？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "DLinear",
+            "dataset": "exchange_rate",
+            "pred_len": "336"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "source_type": "script",
+              "pred_len": "336",
+              "entry_py": "run_longExp.py",
+              "dataset": "exchange_rate",
+              "script_name": "exchange_rate.sh",
+              "seq_len": "336",
+              "model": "DLinear",
+              "script_path": "Linear/exchange_rate.sh",
+              "features": "M"
+            },
+            "text_preview": "使用 DLinear 模型对 exchange_rate 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=336，学习率(learning_rate)=0.0005，批大小(batch_size)=32。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "source_type": "script",
+              "pred_len": "96",
+              "dataset": "exchange_rate",
+              "entry_py": "run_longExp.py",
+              "model": "DLinear",
+              "features": "M",
+              "script_name": "exchange_rate.sh",
+              "seq_len": "336",
+              "script_path": "Linear/exchange_rate.sh"
+            },
+            "text_preview": "使用 DLinear 模型对 exchange_rate 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.0005，批大小(batch_size)=8。"
+          }
+        ]
+      },
+      {
+        "id": "S09",
+        "mode": "struct",
+        "query": "DLinear 在 traffic 数据集做 96 预测的配置",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "DLinear",
+            "dataset": "traffic",
+            "pred_len": "96"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "dataset": "traffic",
+              "seq_len": "336",
+              "script_path": "Linear/traffic.sh",
+              "source_type": "script",
+              "features": "M",
+              "entry_py": "run_longExp.py",
+              "pred_len": "96",
+              "script_name": "traffic.sh",
+              "model": "DLinear"
+            },
+            "text_preview": "使用 DLinear 模型对 traffic 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.05，批大小(batch_size)=16。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "seq_len": "336",
+              "script_path": "Linear/traffic.sh",
+              "entry_py": "run_longExp.py",
+              "features": "M",
+              "script_name": "traffic.sh",
+              "pred_len": "336",
+              "model": "DLinear",
+              "dataset": "traffic",
+              "source_type": "script"
+            },
+            "text_preview": "使用 DLinear 模型对 traffic 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=336，学习率(learning_rate)=0.05，批大小(batch_size)=16。"
+          }
+        ]
+      },
+      {
+        "id": "S10",
+        "mode": "struct",
+        "query": "Autoformer 在 ETTh1 上 pred_len=24 时的推荐参数",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "Autoformer",
+            "dataset": "ETTh1",
+            "pred_len": "24"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "pred_len": "24",
+              "label_len": "48",
+              "features": "M",
+              "script_name": "Autoformer_ETTh1.sh",
+              "script_path": "Autoformer/ETT_script/Autoformer_ETTh1.sh",
+              "model": "Autoformer",
+              "source_type": "script",
+              "entry_py": "run.py",
+              "dataset": "ETTh1",
+              "seq_len": "96"
+            },
+            "text_preview": "使用 Autoformer 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=24，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "features": "M",
+              "dataset": "ETTh1",
+              "model": "Autoformer",
+              "entry_py": "run.py",
+              "pred_len": "336",
+              "script_path": "Autoformer/ETT_script/Autoformer_ETTh1.sh",
+              "seq_len": "96",
+              "label_len": "48",
+              "source_type": "script",
+              "script_name": "Autoformer_ETTh1.sh"
+            },
+            "text_preview": "使用 Autoformer 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=336，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+          }
+        ]
+      },
+      {
+        "id": "S11",
+        "mode": "struct",
+        "query": "Autoformer ETTh1 的 168 预测配置",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "Autoformer",
+            "dataset": "ETTh1",
+            "pred_len": "168"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "script_name": "Autoformer_ETTh1.sh",
+              "model": "Autoformer",
+              "seq_len": "96",
+              "features": "M",
+              "source_type": "script",
+              "pred_len": "168",
+              "label_len": "48",
+              "entry_py": "run.py",
+              "dataset": "ETTh1",
+              "script_path": "Autoformer/ETT_script/Autoformer_ETTh1.sh"
+            },
+            "text_preview": "使用 Autoformer 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=168，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "dataset": "ETTh1",
+              "seq_len": "96",
+              "label_len": "48",
+              "pred_len": "336",
+              "features": "M",
+              "script_name": "Autoformer_ETTh1.sh",
+              "model": "Autoformer",
+              "script_path": "Autoformer/ETT_script/Autoformer_ETTh1.sh",
+              "source_type": "script",
+              "entry_py": "run.py"
+            },
+            "text_preview": "使用 Autoformer 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=336，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+          }
+        ]
+      },
+      {
+        "id": "S12",
+        "mode": "struct",
+        "query": "Autoformer 在 ETTh2 上 pred_len=336 应该如何设置？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "Autoformer",
+            "dataset": "ETTh2",
+            "pred_len": "336"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "Autoformer",
+              "dataset": "ETTh2",
+              "script_path": "Autoformer/ETT_script/Autoformer_ETTh2.sh",
+              "script_name": "Autoformer_ETTh2.sh",
+              "source_type": "script",
+              "pred_len": "336",
+              "seq_len": "96",
+              "entry_py": "run.py",
+              "label_len": "48",
+              "features": "M"
+            },
+            "text_preview": "使用 Autoformer 模型对 ETTh2 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=336，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "dataset": "ETTh2",
+              "script_path": "Autoformer/ETT_script/Autoformer_ETTh2.sh",
+              "model": "Autoformer",
+              "label_len": "48",
+              "script_name": "Autoformer_ETTh2.sh",
+              "entry_py": "run.py",
+              "source_type": "script",
+              "seq_len": "96",
+              "pred_len": "168",
+              "features": "M"
+            },
+            "text_preview": "使用 Autoformer 模型对 ETTh2 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=168，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+          }
+        ]
+      },
+      {
+        "id": "S13",
+        "mode": "struct",
+        "query": "Informer 在 ETTh2 数据集上，M 特征、pred_len=48 的配置",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "informer",
+            "dataset": "ETTh2",
+            "pred_len": "48",
+            "features": "M"
+          },
+          {
+            "model": "Informer",
+            "dataset": "ETTh2",
+            "pred_len": "48",
+            "features": "M"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 0.0,
+        "hit_at_1": 0.0,
+        "reciprocal_rank": 0.5,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": false,
+            "attrs": {
+              "label_len": "48",
+              "entry_py": "main_informer.py",
+              "dataset": "ETTh2",
+              "script_name": "ETTh2.sh",
+              "model": "informer",
+              "source_type": "script",
+              "script_path": "Informer/ETTh2.sh",
+              "seq_len": "48",
+              "pred_len": "24",
+              "features": "M"
+            },
+            "text_preview": "使用 informer 模型对 ETTh2 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=48，标签长度(label_len)=48，预测长度(pred_len)=24，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "script_path": "Informer/ETTh2.sh",
+              "model": "informer",
+              "entry_py": "main_informer.py",
+              "source_type": "script",
+              "label_len": "96",
+              "seq_len": "96",
+              "pred_len": "48",
+              "dataset": "ETTh2",
+              "features": "M",
+              "script_name": "ETTh2.sh"
+            },
+            "text_preview": "使用 informer 模型对 ETTh2 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=96，标签长度(label_len)=96，预测长度(pred_len)=48，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+          }
+        ]
+      },
+      {
+        "id": "S14",
+        "mode": "struct",
+        "query": "Informer 在 ETTh1 上 S 模式、720 预测的参数推荐",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "informer",
+            "dataset": "ETTh1",
+            "pred_len": "720",
+            "features": "S"
+          },
+          {
+            "model": "Informer",
+            "dataset": "ETTh1",
+            "pred_len": "720",
+            "features": "S"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "features": "S",
+              "dataset": "ETTh1",
+              "model": "informer",
+              "label_len": "336",
+              "script_name": "ETTh1.sh",
+              "source_type": "script",
+              "pred_len": "720",
+              "script_path": "Informer/ETTh1.sh",
+              "entry_py": "main_informer.py",
+              "seq_len": "720"
+            },
+            "text_preview": "使用 informer 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=720，标签长度(label_len)=336，预测长度(pred_len)=720，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "dataset": "ETTh1",
+              "script_path": "Informer/ETTh1.sh",
+              "entry_py": "main_informer.py",
+              "pred_len": "168",
+              "script_name": "ETTh1.sh",
+              "label_len": "336",
+              "seq_len": "720",
+              "source_type": "script",
+              "model": "informer",
+              "features": "S"
+            },
+            "text_preview": "使用 informer 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=720，标签长度(label_len)=336，预测长度(pred_len)=168，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+          }
+        ]
+      },
+      {
+        "id": "S15",
+        "mode": "struct",
+        "query": "Informer 在 WTH 数据集上 336 预测如何配置？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "informer",
+            "dataset": "WTH",
+            "pred_len": "336"
+          },
+          {
+            "model": "Informer",
+            "dataset": "WTH",
+            "pred_len": "336"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "label_len": "336",
+              "seq_len": "336",
+              "model": "informer",
+              "dataset": "WTH",
+              "source_type": "script",
+              "entry_py": "main_informer.py",
+              "script_name": "WTH.sh",
+              "features": "S",
+              "script_path": "Informer/WTH.sh",
+              "pred_len": "336"
+            },
+            "text_preview": "使用 informer 模型对 WTH 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=336，标签长度(label_len)=336，预测长度(pred_len)=336，编码器层数(e_layers)=3，解码器层数(d_layers)=2。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "seq_len": "720",
+              "label_len": "336",
+              "source_type": "script",
+              "entry_py": "main_informer.py",
+              "script_path": "Informer/WTH.sh",
+              "model": "informer",
+              "dataset": "WTH",
+              "features": "S",
+              "script_name": "WTH.sh",
+              "pred_len": "720"
+            },
+            "text_preview": "使用 informer 模型对 WTH 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=720，标签长度(label_len)=336，预测长度(pred_len)=720，编码器层数(e_layers)=3，解码器层数(d_layers)=2。"
+          }
+        ]
+      },
+      {
+        "id": "S16",
+        "mode": "struct",
+        "query": "Transformer 在 ETTh1 上 pred_len=48 的推荐设置",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "Transformer",
+            "dataset": "ETTh1",
+            "pred_len": "48"
+          }
+        ],
+        "precision_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "precision_at_1": 0.0,
+        "hit_at_1": 0.0,
+        "reciprocal_rank": 0.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": false,
+            "attrs": {
+              "seq_len": "96",
+              "features": "M",
+              "dataset": "ETTm1",
+              "entry_py": "run.py",
+              "label_len": "48",
+              "pred_len": "96",
+              "script_name": "Transformer.sh",
+              "model": "Transformer",
+              "script_path": "Autoformer/ETT_script/Transformer.sh",
+              "source_type": "script"
+            },
+            "text_preview": "使用 Transformer 模型对 ETTm1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=96，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "pred_len": "192",
+              "script_name": "Transformer.sh",
+              "model": "Transformer",
+              "entry_py": "run.py",
+              "source_type": "script",
+              "features": "M",
+              "script_path": "Autoformer/ETT_script/Transformer.sh",
+              "label_len": "48",
+              "seq_len": "96",
+              "dataset": "ETTm1"
+            },
+            "text_preview": "使用 Transformer 模型对 ETTm1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=192，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+          }
+        ]
+      },
+      {
+        "id": "S17",
+        "mode": "struct",
+        "query": "Transformer 在 weather 数据集上做 720 预测的参数",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "Transformer",
+            "dataset": "weather",
+            "pred_len": "720"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "script_name": "Transformer.sh",
+              "script_path": "Autoformer/Weather_script/Transformer.sh",
+              "seq_len": "96",
+              "model": "Transformer",
+              "dataset": "weather",
+              "source_type": "script",
+              "features": "M",
+              "label_len": "48",
+              "entry_py": "run.py",
+              "pred_len": "720"
+            },
+            "text_preview": "使用 Transformer 模型对 weather 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=720，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "source_type": "script",
+              "entry_py": "run.py",
+              "model": "Transformer",
+              "dataset": "weather",
+              "seq_len": "96",
+              "pred_len": "192",
+              "label_len": "48",
+              "features": "M",
+              "script_name": "Transformer.sh",
+              "script_path": "Autoformer/Weather_script/Transformer.sh"
+            },
+            "text_preview": "使用 Transformer 模型对 weather 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=192，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+          }
+        ]
+      },
+      {
+        "id": "S18",
+        "mode": "struct",
+        "query": "ModernTCN 在 ETTh1 上 pred_len=336 的配置建议",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "ModernTCN",
+            "dataset": "ETTh1",
+            "pred_len": "336"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "pred_len": "336",
+              "script_path": "ModernTCN/ETTh1.sh",
+              "dataset": "ETTh1",
+              "script_name": "ETTh1.sh",
+              "features": "M",
+              "entry_py": "run.py",
+              "seq_len": "336",
+              "model": "ModernTCN",
+              "source_type": "script"
+            },
+            "text_preview": "使用 ModernTCN 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=336，学习率(learning_rate)=0.0001，批大小(batch_size)=512，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "model": "ModernTCN",
+              "script_name": "ETTh1.sh",
+              "seq_len": "336",
+              "source_type": "script",
+              "features": "M",
+              "entry_py": "run.py",
+              "script_path": "ModernTCN/ETTh1.sh",
+              "dataset": "ETTh1",
+              "pred_len": "96"
+            },
+            "text_preview": "使用 ModernTCN 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.0001，批大小(batch_size)=512，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          }
+        ]
+      },
+      {
+        "id": "S19",
+        "mode": "struct",
+        "query": "ModernTCN 在 ETTh2 上 192 步预测怎么设置？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "ModernTCN",
+            "dataset": "ETTh2",
+            "pred_len": "192"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "dataset": "ETTh2",
+              "script_path": "ModernTCN/ETTh2.sh",
+              "entry_py": "run.py",
+              "script_name": "ETTh2.sh",
+              "source_type": "script",
+              "features": "M",
+              "seq_len": "336",
+              "pred_len": "192",
+              "model": "ModernTCN"
+            },
+            "text_preview": "使用 ModernTCN 模型对 ETTh2 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=192，学习率(learning_rate)=0.0001，批大小(batch_size)=512，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "script_name": "ETTh2.sh",
+              "seq_len": "336",
+              "script_path": "ModernTCN/ETTh2.sh",
+              "dataset": "ETTh2",
+              "model": "ModernTCN",
+              "pred_len": "720",
+              "entry_py": "run.py",
+              "features": "M",
+              "source_type": "script"
+            },
+            "text_preview": "使用 ModernTCN 模型对 ETTh2 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=720，学习率(learning_rate)=0.0001，批大小(batch_size)=512，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          }
+        ]
+      },
+      {
+        "id": "S20",
+        "mode": "struct",
+        "query": "ModernTCN 在 ETTm2 上 pred_len=720 的训练参数",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "ModernTCN",
+            "dataset": "ETTm2",
+            "pred_len": "720"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "seq_len": "960",
+              "features": "M",
+              "dataset": "ETTm2",
+              "source_type": "script",
+              "script_path": "ModernTCN/ETTm2.sh",
+              "model": "ModernTCN",
+              "pred_len": "720",
+              "entry_py": "run.py",
+              "script_name": "ETTm2.sh"
+            },
+            "text_preview": "使用 ModernTCN 模型对 ETTm2 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=960，预测长度(pred_len)=720，学习率(learning_rate)=0.0001，批大小(batch_size)=512，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "source_type": "script",
+              "entry_py": "run.py",
+              "script_name": "ETTm2.sh",
+              "script_path": "ModernTCN/ETTm2.sh",
+              "seq_len": "192",
+              "model": "ModernTCN",
+              "features": "M",
+              "pred_len": "96",
+              "dataset": "ETTm2"
+            },
+            "text_preview": "使用 ModernTCN 模型对 ETTm2 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=192，预测长度(pred_len)=96，学习率(learning_rate)=0.0001，批大小(batch_size)=512，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          }
+        ]
+      },
+      {
+        "id": "S21",
+        "mode": "struct",
+        "query": "ModernTCN 在 electricity 上 96 预测的推荐配置",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "ModernTCN",
+            "dataset": "electricity",
+            "pred_len": "96"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "model": "ModernTCN",
+              "seq_len": "720",
+              "script_name": "ECL.sh",
+              "dataset": "electricity",
+              "source_type": "script",
+              "features": "M",
+              "entry_py": "run.py",
+              "pred_len": "96",
+              "script_path": "ModernTCN/ECL.sh"
+            },
+            "text_preview": "使用 ModernTCN 模型对 electricity 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=720，预测长度(pred_len)=96，学习率(learning_rate)=0.0001，批大小(batch_size)=32，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "dataset": "electricity",
+              "model": "ModernTCN",
+              "script_path": "ModernTCN/ECL.sh",
+              "pred_len": "336",
+              "entry_py": "run.py",
+              "features": "M",
+              "source_type": "script",
+              "script_name": "ECL.sh",
+              "seq_len": "720"
+            },
+            "text_preview": "使用 ModernTCN 模型对 electricity 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=720，预测长度(pred_len)=336，学习率(learning_rate)=0.0001，批大小(batch_size)=32，Patch大小(patch_size)=8，Patch步幅(patch_stride)=4。"
+          }
+        ]
+      },
+      {
+        "id": "S22",
+        "mode": "struct",
+        "query": "PatchTST 在 ETTh1 常见的预测长度有哪些？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "PatchTST",
+            "dataset": "ETTh1",
+            "pred_len": "96"
+          },
+          {
+            "model": "PatchTST",
+            "dataset": "ETTh1",
+            "pred_len": "192"
+          },
+          {
+            "model": "PatchTST",
+            "dataset": "ETTh1",
+            "pred_len": "336"
+          },
+          {
+            "model": "PatchTST",
+            "dataset": "ETTh1",
+            "pred_len": "720"
+          }
+        ],
+        "precision_at_k": 1.0,
+        "recall_at_k": 0.5,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "features": "M",
+              "script_name": "etth1.sh",
+              "model": "PatchTST",
+              "pred_len": "720",
+              "seq_len": "336",
+              "script_path": "PatchTST/etth1.sh",
+              "source_type": "script",
+              "entry_py": "run_longExp.py",
+              "dataset": "ETTh1"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=720，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)="
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "pred_len": "96",
+              "script_name": "etth1.sh",
+              "source_type": "script",
+              "seq_len": "336",
+              "dataset": "ETTh1",
+              "entry_py": "run_longExp.py",
+              "script_path": "PatchTST/etth1.sh",
+              "features": "M",
+              "model": "PatchTST"
+            },
+            "text_preview": "使用 PatchTST 模型对 ETTh1 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.0001，批大小(batch_size)=128，模型维度(d_model)=16，注意力头数(n_heads)=4，编码器层数(e_layers)=3，Patch长度(patch_len)=16，步幅(stride)=8"
+          }
+        ]
+      },
+      {
+        "id": "S23",
+        "mode": "struct",
+        "query": "DLinear 在 ETTh2 常用 pred_len 选项有哪些？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "DLinear",
+            "dataset": "ETTh2",
+            "pred_len": "96"
+          },
+          {
+            "model": "DLinear",
+            "dataset": "ETTh2",
+            "pred_len": "192"
+          },
+          {
+            "model": "DLinear",
+            "dataset": "ETTh2",
+            "pred_len": "336"
+          },
+          {
+            "model": "DLinear",
+            "dataset": "ETTh2",
+            "pred_len": "720"
+          }
+        ],
+        "precision_at_k": 1.0,
+        "recall_at_k": 0.5,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "script_name": "etth2.sh",
+              "script_path": "Linear/etth2.sh",
+              "dataset": "ETTh2",
+              "features": "M",
+              "seq_len": "336",
+              "source_type": "script",
+              "pred_len": "96",
+              "model": "DLinear",
+              "entry_py": "run_longExp.py"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh2 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=96，学习率(learning_rate)=0.05，批大小(batch_size)=32。"
+          },
+          {
+            "rank": 2,
+            "matched": true,
+            "attrs": {
+              "source_type": "script",
+              "script_path": "Linear/etth2.sh",
+              "pred_len": "192",
+              "seq_len": "336",
+              "dataset": "ETTh2",
+              "script_name": "etth2.sh",
+              "features": "M",
+              "model": "DLinear",
+              "entry_py": "run_longExp.py"
+            },
+            "text_preview": "使用 DLinear 模型对 ETTh2 数据集训练时推荐配置，特征模式(features)=M，输入序列长度(seq_len)=336，预测长度(pred_len)=192，学习率(learning_rate)=0.05，批大小(batch_size)=32。"
+          }
+        ]
+      },
+      {
+        "id": "S24",
+        "mode": "struct",
+        "query": "NLinear 模型有什么特点，适合什么场景？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "NLinear",
+            "source_type": "manual"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "source_type": "manual",
+              "model": "NLinear"
+            },
+            "text_preview": "NLinear模型：在DLinear基础上加入了减去最后一个时间步的归一化技巧，在分布偏移场景下效果更好，速度快。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "source_type": "manual",
+              "model": "DLinear"
+            },
+            "text_preview": "DLinear模型：一个极其简单的线性模型，在某些明显带有周期性和趋势性的单变量或多变量数据集上表现极好，且训练极快。"
+          }
+        ]
+      },
+      {
+        "id": "S25",
+        "mode": "struct",
+        "query": "Informer 模型的核心特点是什么？",
+        "k": 2,
+        "gold_any": [
+          {
+            "model": "Informer",
+            "source_type": "manual"
+          }
+        ],
+        "precision_at_k": 0.5,
+        "recall_at_k": 1.0,
+        "precision_at_1": 1.0,
+        "hit_at_1": 1.0,
+        "reciprocal_rank": 1.0,
+        "ranked": [
+          {
+            "rank": 1,
+            "matched": true,
+            "attrs": {
+              "source_type": "manual",
+              "model": "Informer"
+            },
+            "text_preview": "Informer模型：使用ProbSparse稀疏注意力机制，适合超长序列预测，降低了Transformer的平方复杂度，但是速度较慢。"
+          },
+          {
+            "rank": 2,
+            "matched": false,
+            "attrs": {
+              "label_len": "48",
+              "script_name": "Informer.sh",
+              "model": "Informer",
+              "seq_len": "96",
+              "source_type": "script",
+              "pred_len": "96",
+              "script_path": "Autoformer/ECL_script/Informer.sh",
+              "entry_py": "run.py",
+              "dataset": "electricity",
+              "features": "S"
+            },
+            "text_preview": "使用 Informer 模型对 electricity 数据集训练时推荐配置，特征模式(features)=S，输入序列长度(seq_len)=96，标签长度(label_len)=48，预测长度(pred_len)=96，编码器层数(e_layers)=2，解码器层数(d_layers)=1。"
+          }
+        ]
+      }
+    ]
+  }
+}

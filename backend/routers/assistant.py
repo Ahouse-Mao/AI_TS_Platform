@@ -7,7 +7,7 @@ from typing import List
 
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/api/assistant", tags=["assistant"])
 
@@ -22,6 +22,8 @@ class AssistantChatRequest(BaseModel):
     api_key:  str  = ''
     base_url: str  = 'https://api.openai.com/v1'
     use_rag:  bool = True
+    use_struct_rag: bool = False
+    top_k: int = Field(default=3, ge=1, le=10)
 
 
 # ── 注入到 System Prompt 的训练 & 推理触发指令 ──
@@ -68,7 +70,7 @@ def get_assistant_models(api_key: str = '', base_url: str = 'https://api.openai.
 
 
 @router.post('/chat')
-async def assistant_chat(req: AssistantChatRequest):
+def assistant_chat(req: AssistantChatRequest):
     """流式代理到 OpenAI 兼容 API，以 SSE 形式返回给前端。"""
 
     if not req.api_key.strip():
@@ -90,12 +92,18 @@ async def assistant_chat(req: AssistantChatRequest):
         try:
             import os as _os
             _os.environ['HF_HUB_OFFLINE'] = '1'
-            from ..RAG.rag import load_index, PERSIST_DIR
+            if req.use_struct_rag:
+                from RAG.rag_struct import retrieve, PERSIST_DIR
+            else:
+                from RAG.rag import load_index, PERSIST_DIR
             if _os.path.exists(PERSIST_DIR):
                 user_msgs = [m for m in req.messages if m.role == 'user']
                 if user_msgs:
                     query = user_msgs[-1].content
-                    docs  = load_index().similarity_search(query, k=3)
+                    if req.use_struct_rag:
+                        docs = retrieve(query=query, k=req.top_k)
+                    else:
+                        docs = load_index().similarity_search(query, k=req.top_k) # 加载持久化ChromaDB, 进行相似度搜索
                     if docs:
                         context = '\n\n'.join(
                             f"[参考{i+1}] {d.page_content}" for i, d in enumerate(docs)

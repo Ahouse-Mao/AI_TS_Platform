@@ -14,15 +14,15 @@ if MODEL_SRC_DIR not in sys.path:
     sys.path.insert(0, MODEL_SRC_DIR)
 
 # ── 数据库 & ORM（导入 User 确保建表时注册到 Base.metadata）──
-from .database     import engine, Base
-from .models       import User          # noqa: F401
+from database     import engine, Base
+from models       import User          # noqa: F401
 
 # ── 路由模块 ──
-from .routers.auth      import router as auth_router
-from .routers            import train    as train_mod
-from .routers            import predict  as predict_mod
-from .routers.assistant import router as assistant_router
-from .routers.rag       import router as rag_router
+from routers.auth      import router as auth_router
+from routers            import train    as train_mod
+from routers            import predict  as predict_mod
+from routers.assistant import router as assistant_router
+from routers.rag       import router as rag_router
 
 # ── 向各路由模块注入路径常量（避免硬编码）──
 train_mod.MODEL_SRC_DIR     = MODEL_SRC_DIR

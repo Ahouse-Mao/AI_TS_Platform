@@ -40,16 +40,34 @@ export function InferencePage() {
   useEffect(() => { ssSet(ssNKey, nSamples) }, [nSamples])    // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { ssSet(ssOKey, useOnnx)  }, [useOnnx])     // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 拉取 checkpoint 列表，找到当前项
+  // 挂载时检测 AI 助手注入的待填推理参数
+  useEffect(() => {
+    const cfg = ssGet<Record<string, unknown> | null>('pending_infer_config', null)
+    if (!cfg) return
+    ssSet('pending_infer_config', null)   // 消费后清除
+    if (typeof cfg.n_samples === 'number')  setNSamples(cfg.n_samples)
+    if (typeof cfg.use_onnx  === 'boolean') setUseOnnx(cfg.use_onnx)
+  }, []) // 仅在挂载时执行一次
+
+  // 拉取 checkpoint 列表，找到当前项（支持 'latest' 自动跳转到最新）
   useEffect(() => {
     if (!folderName) return
+    setCkptLoading(true)
     axios.get(`${API_BASE}/api/predict/checkpoints`)
       .then(res => {
-        const found = (res.data as CheckpointInfo[]).find(c => c.folder_name === folderName)
+        const list = res.data as CheckpointInfo[]
+        // 'latest' → 自动导航到列表中第一个（最新）checkpoint
+        if (folderName === 'latest') {
+          if (list.length > 0) navigate(`/predict/${list[0].folder_name}`, { replace: true })
+          else setCkptLoading(false)
+          return
+        }
+        const found = list.find(c => c.folder_name === folderName)
         setCkpt(found ?? null)
+        setCkptLoading(false)
       })
-      .finally(() => setCkptLoading(false))
-  }, [folderName])
+      .catch(() => setCkptLoading(false))
+  }, [folderName, navigate])
 
   // 点击"开始推理"
   function handleStartInference() {

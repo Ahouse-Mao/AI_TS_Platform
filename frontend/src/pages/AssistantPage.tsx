@@ -1,7 +1,8 @@
 // ===================== AI 助手聊天页面 =====================
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { API_BASE } from '../config'
-import { lsGet, lsSet } from '../utils/storage'
+import { lsGet, lsSet, ssSet } from '../utils/storage'
 
 /* ================================================================
    类型
@@ -21,6 +22,8 @@ const SK_SETTINGS = 'ai_ts_settings'
 const SK_MODEL    = 'ai_ts_model'
 const SK_FETCHED_MODELS = 'ai_ts_fetched_models'
 const SK_USE_RAG  = 'ai_ts_use_rag'
+const SK_USE_STRUCT_RAG = 'ai_ts_use_struct_rag'
+const SK_RAG_TOPK = 'ai_ts_rag_topk'
 
 const MODELS = [
   { value: 'gpt-4o',            label: 'GPT-4o' },
@@ -63,6 +66,8 @@ export function AssistantPage() {
   const [streaming,  setStreaming]  = useState(false)
   const [streamText, setStreamText] = useState('')
   const [useRag,     setUseRag]     = useState<boolean>(() => load(SK_USE_RAG, true))
+  const [useStructRag, setUseStructRag] = useState<boolean>(() => load(SK_USE_STRUCT_RAG, false))
+  const [ragTopK, setRagTopK] = useState<number>(() => load(SK_RAG_TOPK, 3))
 
   /* ── UI 状态 ── */
   const [showSettings, setShowSettings] = useState(false)
@@ -74,6 +79,7 @@ export function AssistantPage() {
   const messagesRef = useRef<HTMLDivElement>(null)
   const inputRef    = useRef<HTMLTextAreaElement>(null)
   const abortRef    = useRef<AbortController | null>(null)
+  const navigate    = useNavigate()
 
   /* ── 持久化到 localStorage ── */
   useEffect(() => { lsSet(SK_CONVOS,         convos) },        [convos])
@@ -81,6 +87,8 @@ export function AssistantPage() {
   useEffect(() => { lsSet(SK_SETTINGS,       settings) },      [settings])
   useEffect(() => { lsSet(SK_FETCHED_MODELS, fetchedModels) }, [fetchedModels])
   useEffect(() => { lsSet(SK_USE_RAG,        useRag) },        [useRag])
+  useEffect(() => { lsSet(SK_USE_STRUCT_RAG, useStructRag) },  [useStructRag])
+  useEffect(() => { lsSet(SK_RAG_TOPK,       ragTopK) },       [ragTopK])
 
   /* ── 消息变化时自动滚动到底部 ── */
   useEffect(() => {
@@ -155,7 +163,15 @@ export function AssistantPage() {
       const res = await fetch(`${API_BASE}/api/assistant/chat`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ messages: apiMsgs, model, api_key: settings.apiKey, base_url: settings.baseUrl, use_rag: useRag }),
+        body:    JSON.stringify({
+          messages: apiMsgs,
+          model,
+          api_key: settings.apiKey,
+          base_url: settings.baseUrl,
+          use_rag: useRag,
+          use_struct_rag: useStructRag,
+          top_k: ragTopK,
+        }),
         signal:  abort.signal,
       })
 
@@ -197,7 +213,28 @@ export function AssistantPage() {
     setStreaming(false)
     setStreamText('')
     abortRef.current = null
-  }, [input, streaming, activeId, convos, settings, model, useRag])
+
+    // ── 解析训练触发配置块（<<<TRAIN_CONFIG ... >>>）── 
+    const trainMatch = full.match(/<<<TRAIN_CONFIG\s*([\s\S]*?)>>>/)
+    if (trainMatch) {
+      try {
+        const cfg = JSON.parse(trainMatch[1].trim())
+        ssSet('pending_train_config', cfg)   // 传递给 TrainPage
+        navigate('/train')
+      } catch { /* JSON 格式错误时忽略，不跳转 */ }
+    }
+
+    // ── 解析推理触发配置块（<<<INFER_CONFIG ... >>>）──
+    const inferMatch = full.match(/<<<INFER_CONFIG\s*([\s\S]*?)>>>/)
+    if (inferMatch) {
+      try {
+        const cfg = JSON.parse(inferMatch[1].trim())
+        ssSet('pending_infer_config', cfg)   // 传递给 InferencePage
+        const folder = typeof cfg.folder_name === 'string' ? cfg.folder_name : 'latest'
+        navigate(`/predict/${folder}`)
+      } catch { /* JSON 格式错误时忽略，不跳转 */ }
+    }
+  }, [input, streaming, activeId, convos, settings, model, useRag, useStructRag, ragTopK, navigate])
 
   /* ── 停止生成 ── */
   const stop = useCallback(() => { abortRef.current?.abort() }, [])
@@ -399,7 +436,7 @@ export function AssistantPage() {
           <div style={{ borderTop: '1px solid #2a2a3d', padding: '16px 24px', flexShrink: 0 }}>
 
             {/* RAG 开关 */}
-            <div style={{ maxWidth: '760px', margin: '0 auto 8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ maxWidth: '760px', margin: '0 auto 8px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <button
                 onClick={() => setUseRag(p => !p)}
                 style={{
@@ -421,9 +458,67 @@ export function AssistantPage() {
                 <span style={{ fontSize: '10px' }}>🔍</span>
                 RAG检索 {useRag ? '已启用' : '已禁用'}
               </button>
+
+              <button
+                onClick={() => setUseStructRag(p => !p)}
+                disabled={!useRag}
+                style={{
+                  display:      'flex',
+                  alignItems:   'center',
+                  gap:          '5px',
+                  padding:      '3px 10px',
+                  borderRadius: '12px',
+                  fontSize:     '12px',
+                  fontWeight:   'bold',
+                  cursor:       useRag ? 'pointer' : 'not-allowed',
+                  border:       `1px solid ${useStructRag ? '#4f8f6f' : '#3a3a55'}`,
+                  background:   useStructRag ? '#18332a' : 'transparent',
+                  color:        useStructRag ? '#8fd4b5' : '#555',
+                  transition:   'all 0.2s',
+                  opacity:      useRag ? 1 : 0.6,
+                }}
+                title={
+                  !useRag
+                    ? '请先启用 RAG 检索'
+                    : (useStructRag ? '已使用结构化 RAG，点击切换到普通 RAG' : '当前使用普通 RAG，点击切换为结构化 RAG')
+                }
+              >
+                <span style={{ fontSize: '10px' }}>🧩</span>
+                {useStructRag ? '结构化RAG' : '普通RAG'}
+              </button>
+
               {useRag && (
-                <span style={{ fontSize: '11px', color: '#555' }}>每条消息将自动检索知识库并注入上下文</span>
+                <span style={{ fontSize: '11px', color: '#555' }}>
+                  每条消息将自动检索知识库并注入上下文（当前：{useStructRag ? '结构化RAG' : '普通RAG'}，topk={ragTopK}）
+                </span>
               )}
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '11px', color: '#666' }}>topk</span>
+                <select
+                  value={ragTopK}
+                  disabled={!useRag}
+                  onChange={e => setRagTopK(Number(e.target.value))}
+                  style={{
+                    background: '#1e1e35',
+                    border: '1px solid #3a3a55',
+                    borderRadius: '6px',
+                    color: '#bbb',
+                    padding: '2px 8px',
+                    fontSize: '12px',
+                    outline: 'none',
+                    opacity: useRag ? 1 : 0.6,
+                    cursor: useRag ? 'pointer' : 'not-allowed',
+                  }}
+                  title="在线问答检索返回条数"
+                >
+                  <option value={1}>1</option>
+                  <option value={2}>2</option>
+                  <option value={3}>3</option>
+                  <option value={5}>5</option>
+                  <option value={8}>8</option>
+                </select>
+              </div>
             </div>
             <div style={{ maxWidth: '760px', margin: '0 auto', display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
               <textarea ref={inputRef} value={input}

@@ -1,0 +1,211 @@
+[
+  {
+    "id": "S01",
+    "query": "PatchTST 在 ETTh1 数据集上，pred_len=96 时推荐配置是什么？",
+    "k": 3,
+    "gold_any": [
+      { "model": "PatchTST", "dataset": "ETTh1", "pred_len": "96", "seq_len": "336" }
+    ]
+  },
+  {
+    "id": "S02",
+    "query": "PatchTST 对 ETTh1 的 192 步预测参数有哪些？",
+    "k": 3,
+    "gold_any": [
+      { "model": "PatchTST", "dataset": "ETTh1", "pred_len": "192", "seq_len": "336" }
+    ]
+  },
+  {
+    "id": "S03",
+    "query": "PatchTST 在 ETTh2 上做 336 预测时的配置建议",
+    "k": 3,
+    "gold_any": [
+      { "model": "PatchTST", "dataset": "ETTh2", "pred_len": "336" }
+    ]
+  },
+  {
+    "id": "S04",
+    "query": "PatchTST 在 ETTm1 上 pred_len=720 的推荐参数",
+    "k": 3,
+    "gold_any": [
+      { "model": "PatchTST", "dataset": "ETTm1", "pred_len": "720" }
+    ]
+  },
+  {
+    "id": "S05",
+    "query": "DLinear 在 ETTh1 数据集上 96 预测的训练配置",
+    "k": 3,
+    "gold_any": [
+      { "model": "DLinear", "dataset": "ETTh1", "pred_len": "96" }
+    ]
+  },
+  {
+    "id": "S06",
+    "query": "DLinear ETTh1 的 720 步预测建议参数是什么？",
+    "k": 3,
+    "gold_any": [
+      { "model": "DLinear", "dataset": "ETTh1", "pred_len": "720" }
+    ]
+  },
+  {
+    "id": "S07",
+    "query": "DLinear 在 ETTh2 上做 192 预测的参数推荐",
+    "k": 3,
+    "gold_any": [
+      { "model": "DLinear", "dataset": "ETTh2", "pred_len": "192" }
+    ]
+  },
+  {
+    "id": "S08",
+    "query": "DLinear 在 exchange_rate 数据集上 pred_len=336 怎么配？",
+    "k": 3,
+    "gold_any": [
+      { "model": "DLinear", "dataset": "exchange_rate", "pred_len": "336" }
+    ]
+  },
+  {
+    "id": "S09",
+    "query": "DLinear 在 traffic 数据集做 96 预测的配置",
+    "k": 3,
+    "gold_any": [
+      { "model": "DLinear", "dataset": "traffic", "pred_len": "96" }
+    ]
+  },
+  {
+    "id": "S10",
+    "query": "Autoformer 在 ETTh1 上 pred_len=24 时的推荐参数",
+    "k": 3,
+    "gold_any": [
+      { "model": "Autoformer", "dataset": "ETTh1", "pred_len": "24" }
+    ]
+  },
+  {
+    "id": "S11",
+    "query": "Autoformer ETTh1 的 168 预测配置",
+    "k": 3,
+    "gold_any": [
+      { "model": "Autoformer", "dataset": "ETTh1", "pred_len": "168" }
+    ]
+  },
+  {
+    "id": "S12",
+    "query": "Autoformer 在 ETTh2 上 pred_len=336 应该如何设置？",
+    "k": 3,
+    "gold_any": [
+      { "model": "Autoformer", "dataset": "ETTh2", "pred_len": "336" }
+    ]
+  },
+  {
+    "id": "S13",
+    "query": "Informer 在 ETTh2 数据集上，M 特征、pred_len=48 的配置",
+    "k": 3,
+    "gold_any": [
+      { "model": "informer", "dataset": "ETTh2", "pred_len": "48", "features": "M" },
+      { "model": "Informer", "dataset": "ETTh2", "pred_len": "48", "features": "M" }
+    ]
+  },
+  {
+    "id": "S14",
+    "query": "Informer 在 ETTh1 上 S 模式、720 预测的参数推荐",
+    "k": 3,
+    "gold_any": [
+      { "model": "informer", "dataset": "ETTh1", "pred_len": "720", "features": "S" },
+      { "model": "Informer", "dataset": "ETTh1", "pred_len": "720", "features": "S" }
+    ]
+  },
+  {
+    "id": "S15",
+    "query": "Informer 在 WTH 数据集上 336 预测如何配置？",
+    "k": 3,
+    "gold_any": [
+      { "model": "informer", "dataset": "WTH", "pred_len": "336" },
+      { "model": "Informer", "dataset": "WTH", "pred_len": "336" }
+    ]
+  },
+  {
+    "id": "S16",
+    "query": "Transformer 在 ETTh1 上 pred_len=48 的推荐设置",
+    "k": 3,
+    "gold_any": [
+      { "model": "Transformer", "dataset": "ETTh1", "pred_len": "48" }
+    ]
+  },
+  {
+    "id": "S17",
+    "query": "Transformer 在 weather 数据集上做 720 预测的参数",
+    "k": 3,
+    "gold_any": [
+      { "model": "Transformer", "dataset": "weather", "pred_len": "720" }
+    ]
+  },
+  {
+    "id": "S18",
+    "query": "ModernTCN 在 ETTh1 上 pred_len=336 的配置建议",
+    "k": 3,
+    "gold_any": [
+      { "model": "ModernTCN", "dataset": "ETTh1", "pred_len": "336" }
+    ]
+  },
+  {
+    "id": "S19",
+    "query": "ModernTCN 在 ETTh2 上 192 步预测怎么设置？",
+    "k": 3,
+    "gold_any": [
+      { "model": "ModernTCN", "dataset": "ETTh2", "pred_len": "192" }
+    ]
+  },
+  {
+    "id": "S20",
+    "query": "ModernTCN 在 ETTm2 上 pred_len=720 的训练参数",
+    "k": 3,
+    "gold_any": [
+      { "model": "ModernTCN", "dataset": "ETTm2", "pred_len": "720" }
+    ]
+  },
+  {
+    "id": "S21",
+    "query": "ModernTCN 在 electricity 上 96 预测的推荐配置",
+    "k": 3,
+    "gold_any": [
+      { "model": "ModernTCN", "dataset": "electricity", "pred_len": "96" }
+    ]
+  },
+  {
+    "id": "S22",
+    "query": "PatchTST 在 ETTh1 常见的预测长度有哪些？",
+    "k": 5,
+    "gold_any": [
+      { "model": "PatchTST", "dataset": "ETTh1", "pred_len": "96" },
+      { "model": "PatchTST", "dataset": "ETTh1", "pred_len": "192" },
+      { "model": "PatchTST", "dataset": "ETTh1", "pred_len": "336" },
+      { "model": "PatchTST", "dataset": "ETTh1", "pred_len": "720" }
+    ]
+  },
+  {
+    "id": "S23",
+    "query": "DLinear 在 ETTh2 常用 pred_len 选项有哪些？",
+    "k": 5,
+    "gold_any": [
+      { "model": "DLinear", "dataset": "ETTh2", "pred_len": "96" },
+      { "model": "DLinear", "dataset": "ETTh2", "pred_len": "192" },
+      { "model": "DLinear", "dataset": "ETTh2", "pred_len": "336" },
+      { "model": "DLinear", "dataset": "ETTh2", "pred_len": "720" }
+    ]
+  },
+  {
+    "id": "S24",
+    "query": "NLinear 模型有什么特点，适合什么场景？",
+    "k": 3,
+    "gold_any": [
+      { "model": "NLinear", "source_type": "manual" }
+    ]
+  },
+  {
+    "id": "S25",
+    "query": "Informer 模型的核心特点是什么？",
+    "k": 3,
+    "gold_any": [
+      { "model": "Informer", "source_type": "manual" }
+    ]
+  }
+]

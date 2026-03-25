@@ -9,9 +9,9 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from ..database import get_db
-from ..models   import User
-from ..auth     import hash_password, verify_password, create_access_token, decode_access_token
+from database import get_db
+from models   import User
+from auth     import hash_password, verify_password, create_access_token, decode_access_token
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
